@@ -1,5 +1,8 @@
 from sqlalchemy.orm import Session
+from sqlalchemy.exc import IntegrityError
 
+from app.core.exceptions import ValorDuplicadoError
+from app.core.utils import obter_valor_e_key_duplicado_integrity_error
 from app.modules.usuario.infrastructure.mapper import ClienteMapper, FuncionarioMapper
 from app.modules.usuario.domain.entities import Cliente, Funcionario
 from app.modules.usuario.infrastructure.models import ClienteModel, UsuarioModel, FuncionarioModel
@@ -49,8 +52,14 @@ class ClienteRepository(ClienteRepositoryInterface):
         cliente_model.usuario.email = cliente.usuario.email
         cliente_model.usuario.senha = cliente.usuario.senha
         cliente_model.usuario.nome = cliente.usuario.nome
-
-        self.db.commit()
+        
+        try:
+            self.db.commit()
+        except IntegrityError as e:
+            valor_duplicado, chave = obter_valor_e_key_duplicado_integrity_error(e)
+            self.db.rollback()
+            raise ValorDuplicadoError(valor_duplicado, chave)
+        
         self.db.refresh(cliente_model)
         return ClienteMapper.model_to_entity(cliente_model)
 

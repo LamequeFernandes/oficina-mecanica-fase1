@@ -1,13 +1,7 @@
 from pydantic import BaseModel, validator
 
-class Email(BaseModel):
-    valor: str
+from app.core.exceptions import TamanhoCNPJInvalidoError, TamanhoCPFInvalidoError
 
-    @validator('valor')
-    def validar_email(cls, v):
-        if '@' not in v:
-            raise ValueError('Email inválido')
-        return v
 
 class CPF(BaseModel):
     valor: str
@@ -15,5 +9,19 @@ class CPF(BaseModel):
     @validator('valor')
     def validar_cpf(cls, v):
         if len(v) != 11 or not v.isdigit():
-            raise ValueError('CPF inválido')
+            raise TamanhoCPFInvalidoError
+        # TODO
+        # Adicione a validação de dígitos verificadores aqui (ex: módulo 11)
+        return v
+
+
+class CNPJ(BaseModel):
+    valor: str
+
+    @validator('valor')
+    def validar_cnpj(cls, v):
+        if len(v) != 14 or not v.isdigit():
+            raise TamanhoCNPJInvalidoError
+        # TODO
+        # Adicione a validação de dígitos verificadores
         return v

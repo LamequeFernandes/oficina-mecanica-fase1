@@ -72,23 +72,61 @@ class ValidacaoTokenError(Exception):
         super().__init__("Erro na validação do token")
 
 
+class TamanhoCPFInvalidoError(Exception):
+    """CPF deve ter 11 dígitos numéricos"""
+    def __init__(self):
+        super().__init__("CPF deve ter 11 dígitos numéricos")
+
+
+class TamanhoCNPJInvalidoError(Exception):
+    """CNPJ deve ter 14 dígitos numéricos"""
+    def __init__(self):
+        super().__init__("CNPJ deve ter 14 dígitos numéricos")
+
+
+class TipoInvalidoClienteError(Exception):
+    """Tipo de cliente inválido, deve ser PJ ou PF"""
+    def __init__(self):
+        super().__init__("Tipo de cliente inválido, deve ser PJ ou PF")
+
+
+class ValorDuplicadoError(Exception):
+    """Valor duplicado encontrado."""
+    def __init__(self, valor: str, chave: str):
+        super().__init__(f"Já existe registro com {chave}={valor}.")
+        self.valor = valor
+        self.chave = chave
+
+
 def tratar_erro_dominio(error: Exception) -> HTTPException:
-    match error:
-        case OrdemServicoNotFoundError() | VeiculoNotFoundError():
-            return HTTPException(status.HTTP_404_NOT_FOUND, detail=str(error))
-        
-        case ApenasAdminPodeAcessarError() \
-            | ApenasMecanicosPodemAcessarError() \
-            | ApenasClientesPodemAcessarError() \
-            | ClienteNotFoundError() \
-            | FuncionarioNotFoundError():
-            return HTTPException(status.HTTP_403_FORBIDDEN, detail=str(error))
-        
-        case TokenInvalidoError() \
-            | ValidacaoTokenError():
-            return HTTPException(status.HTTP_401_UNAUTHORIZED, detail=str(error)) 
-        
-        case _:
-            return HTTPException(
-                status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Erro interno"
-            )
+    erros = {
+        "status_400": (
+            TamanhoCPFInvalidoError,
+            TamanhoCNPJInvalidoError,
+            TipoInvalidoClienteError,
+            ValorDuplicadoError,
+        ),
+        "status_401": (
+            TokenInvalidoError,
+            ValidacaoTokenError,
+        ),
+        "status_403" : (
+            ApenasAdminPodeAcessarError,
+            ApenasMecanicosPodemAcessarError,
+            ApenasClientesPodemAcessarError,
+            ClienteNotFoundError,
+            FuncionarioNotFoundError,
+            SomenteProprietarioDoUsuarioError,
+            SomenteProprietarioOuAdminError,
+        ),
+    }
+
+    if isinstance(error, tuple(erros["status_400"])):
+        return HTTPException(status.HTTP_400_BAD_REQUEST, detail=str(error))
+    if isinstance(error, tuple(erros["status_401"])):
+        return HTTPException(status.HTTP_401_UNAUTHORIZED, detail=str(error))
+    if isinstance(error, tuple(erros["status_403"])):
+        return HTTPException(status.HTTP_403_FORBIDDEN, detail=str(error))
+    return HTTPException(
+        status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Erro interno"
+    )

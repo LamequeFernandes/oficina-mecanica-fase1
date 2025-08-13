@@ -9,14 +9,6 @@ class ClienteInputDTO(BaseModel):
     tipo: str = 'PF'
 
 
-class ClienteAlteracaoInputDTO(BaseModel):
-    email: str
-    senha: str
-    nome: str
-    cpf_cnpj: str
-    tipo: str = 'PF'
-
-
 class ClienteOutputDTO(BaseModel):
     cliente_id: int
     nome: str

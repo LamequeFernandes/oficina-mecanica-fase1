@@ -6,7 +6,7 @@ from app.modules.usuario.infrastructure.mapper import ClienteMapper, Funcionario
 from app.modules.usuario.infrastructure.models import ClienteModel, UsuarioModel
 from app.modules.usuario.infrastructure.repositories import AuthRepository, ClienteRepository, FuncionarioRepository
 from ..domain.entities import Cliente, Usuario, Funcionario
-from .dto import ClienteAlteracaoInputDTO, ClienteInputDTO, ClienteOutputDTO, FuncionarioInputDTO, FuncionarioOutputDTO, LoginOutputDTO
+from .dto import ClienteInputDTO, ClienteOutputDTO, FuncionarioInputDTO, FuncionarioOutputDTO, LoginOutputDTO
 
 
 class CriarClienteUseCase:
@@ -37,7 +37,7 @@ class AlterarClienteUseCase:
         self.repo = ClienteRepository(db)
         self.cliente_logado = cliente_logado
 
-    def executar(self, cliente_id: int, dados: ClienteAlteracaoInputDTO) -> ClienteOutputDTO:
+    def executar(self, cliente_id: int, dados: ClienteInputDTO) -> ClienteOutputDTO:
         if self.cliente_logado.cliente_id != cliente_id: # type: ignore
             raise SomenteProprietarioDoUsuarioError
 
@@ -139,10 +139,24 @@ class ConsultarFuncionarioUseCase:
 
 
 class AlterarFuncionarioUseCase:
-    def __init__(self, db: Session):
+    def __init__(self, db: Session, usuario_logado: UsuarioModel):
         self.repo = FuncionarioRepository(db)
+        self.usuario_logado = usuario_logado
+
+    def usuario_logado_eh_admin(self) -> bool:
+        if self.usuario_logado.funcionario:
+            return self.usuario_logado.funcionario.tipo_funcionario == 'ADMINISTRADOR'
+        return False
+
+    def usuario_logado_eh_proprietario_conta(self, funcionario_id: int) -> bool:
+        if self.usuario_logado.funcionario:
+            return self.usuario_logado.funcionario.funcionario_id == funcionario_id
+        return False
 
     def executar(self, funcionario_id: int, dados: FuncionarioInputDTO) -> FuncionarioOutputDTO:
+        if not self.usuario_logado_eh_admin() and not self.usuario_logado_eh_proprietario_conta(funcionario_id):
+            raise SomenteProprietarioOuAdminError
+
         funcionario = self.repo.buscar_por_id(funcionario_id)
         if not funcionario:
             raise FuncionarioNotFoundError(funcionario_id)
