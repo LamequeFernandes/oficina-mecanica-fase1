@@ -3,7 +3,6 @@ from ..domain.entities import OrdemServico
 from .dto import OrdemServicoCriacaoInputDTO, OrdemServicoOutputDTO, StatusOrdemServico
 from ..infrastructure.mapper import OrdemServicoMapper
 from ..infrastructure.repositories import OrdemServicoRepository
-from ..domain.exceptions import OrdemServicoNotFoundError
 from app.modules.usuario.infrastructure.models import UsuarioModel
 
 
