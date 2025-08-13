@@ -1,7 +1,9 @@
 from sqlalchemy.orm import Session
-from ..domain.entities import Cliente, Usuario, Funcionario
-from .models import ClienteModel, UsuarioModel, FuncionarioModel
-from ..application.interfaces import ClienteRepositoryInterface, FuncionarioRepositoryInterface
+
+from app.modules.usuario.infrastructure.mapper import ClienteMapper, FuncionarioMapper
+from app.modules.usuario.domain.entities import Cliente, Funcionario
+from app.modules.usuario.infrastructure.models import ClienteModel, UsuarioModel, FuncionarioModel
+from app.modules.usuario.application.interfaces import ClienteRepositoryInterface, FuncionarioRepositoryInterface
 
 class ClienteRepository(ClienteRepositoryInterface):
     def __init__(self, db: Session):
@@ -23,26 +25,42 @@ class ClienteRepository(ClienteRepositoryInterface):
         self.db.add(cliente_model)
         self.db.commit()
         self.db.refresh(cliente_model)
+        return ClienteMapper.model_to_entity(cliente_model)
 
-        # Converter de volta para entidade
-        return Cliente(
-            cliente_id=cliente_model.cliente_id,  # type: ignore
-            usuario=Usuario(
-                usuario_id=cliente_model.usuario.usuario_id,
-                email=cliente_model.usuario.email,
-                senha=cliente_model.usuario.senha,
-                nome=cliente_model.usuario.nome
-            ),
-            cpf_cnpj=cliente_model.cpf_cnpj, # type: ignore
-            tipo=cliente_model.tipo_cliente # type: ignore
-        )
+    def buscar_por_cpf_cnpj(self, cpf: str):
+        cliente_model = self.db.query(ClienteModel).filter(ClienteModel.cpf_cnpj == cpf).first()
+        if not cliente_model:
+            return None
+        return ClienteMapper.model_to_entity(cliente_model)
 
-    def buscar_por_cpf(self, cpf: str):
-        pass
+    def buscar_por_id(self, id: int) -> Cliente | None:
+        cliente_model = self.db.query(ClienteModel).filter(ClienteModel.cliente_id == id).first()
+        if not cliente_model:
+            return None
+        return ClienteMapper.model_to_entity(cliente_model)
 
-    def buscar_todos(self):
-        pass
-    
+    def alterar(self, cliente: Cliente) -> Cliente | None:
+        cliente_model = self.db.query(ClienteModel).filter(ClienteModel.cliente_id == cliente.cliente_id).first()
+        if not cliente_model:
+            return None
+
+        cliente_model.cpf_cnpj = cliente.cpf_cnpj # type: ignore
+        cliente_model.tipo_cliente = cliente.tipo # type: ignore
+        cliente_model.usuario.email = cliente.usuario.email
+        cliente_model.usuario.senha = cliente.usuario.senha
+        cliente_model.usuario.nome = cliente.usuario.nome
+
+        self.db.commit()
+        self.db.refresh(cliente_model)
+        return ClienteMapper.model_to_entity(cliente_model)
+
+    def remover(self, cliente_id: int) -> None:
+        cliente = self.db.query(ClienteModel).filter(ClienteModel.cliente_id == cliente_id).first()
+        if cliente:
+            self.db.delete(cliente)
+            self.db.delete(cliente.usuario)
+            self.db.commit()
+
 
 class FuncionarioRepository(FuncionarioRepositoryInterface):
     def __init__(self, db: Session):
@@ -64,25 +82,41 @@ class FuncionarioRepository(FuncionarioRepositoryInterface):
         self.db.add(funcionario_model)
         self.db.commit()
         self.db.refresh(funcionario_model)
+        return FuncionarioMapper.model_to_entity(funcionario_model)
 
-        # Converter de volta para entidade
-        return Funcionario(
-            funcionario_id=funcionario_model.funcionario_id,  # type: ignore
-            usuario=Usuario(
-                usuario_id=funcionario_model.usuario.usuario_id,
-                email=funcionario_model.usuario.email,
-                senha=funcionario_model.usuario.senha,
-                nome=funcionario_model.usuario.nome
-            ),
-            matricula=funcionario_model.matricula, # type: ignore
-            tipo=funcionario_model.tipo_funcionario # type: ignore
-        )
-    
-    def buscar_por_matricula(self, cpf: str):
-        pass
+    def buscar_por_matricula(self, matricula: int):
+        funcionario_model = self.db.query(FuncionarioModel).filter(FuncionarioModel.matricula == matricula).first()
+        if not funcionario_model:
+            return None
+        return FuncionarioMapper.model_to_entity(funcionario_model)
 
-    def buscar_todos(self):
-        pass
+    def buscar_por_id(self, id: int) -> Funcionario | None:
+        funcionario_model = self.db.query(FuncionarioModel).filter(FuncionarioModel.funcionario_id == id).first()
+        if not funcionario_model:
+            return None
+        return FuncionarioMapper.model_to_entity(funcionario_model)
+
+    def alterar(self, funcionario: Funcionario) -> Funcionario | None:
+        funcionario_model = self.db.query(FuncionarioModel).filter(FuncionarioModel.funcionario_id == funcionario.funcionario_id).first()
+        if not funcionario_model:
+            return None
+
+        funcionario_model.matricula = funcionario.matricula # type: ignore
+        funcionario_model.tipo_funcionario = funcionario.tipo # type: ignore
+        funcionario_model.usuario.email = funcionario.usuario.email
+        funcionario_model.usuario.senha = funcionario.usuario.senha
+        funcionario_model.usuario.nome = funcionario.usuario.nome
+
+        self.db.commit()
+        self.db.refresh(funcionario_model)
+        return FuncionarioMapper.model_to_entity(funcionario_model)
+
+    def remover(self, funcionario_id: int) -> None:
+        funcionario = self.db.query(FuncionarioModel).filter(FuncionarioModel.funcionario_id == funcionario_id).first()
+        if funcionario:
+            self.db.delete(funcionario)
+            self.db.delete(funcionario.usuario)
+            self.db.commit()
 
 
 class AuthRepository:

@@ -16,6 +16,32 @@ class VeiculoNotFoundError(Exception):
         self.veiculo_id = veiculo_id
 
 
+class ClienteNotFoundError(Exception):
+    """Cliente não encontrado."""
+    def __init__(self, cliente_id: int | None = None):
+        super().__init__(f"Cliente {f'ID {cliente_id}' if cliente_id else ''}não encontrado.")
+        self.cliente_id = cliente_id
+
+
+class FuncionarioNotFoundError(Exception):
+    """Funcionário não encontrado."""
+    def __init__(self, funcionario_id: int | None = None):
+        super().__init__(f"Funcionário {f'ID {funcionario_id}' if funcionario_id else ''}não encontrado.")
+        self.funcionario_id = funcionario_id
+
+
+class SomenteProprietarioDoUsuarioError(Exception):
+    """Somente o proprietário do usuário pode realizar esta ação."""
+    def __init__(self):
+        super().__init__("Somente o proprietário do usuário pode realizar esta ação.")
+
+
+class SomenteProprietarioOuAdminError(Exception):
+    """Somente o proprietário do usuário ou admin pode realizar esta ação."""
+    def __init__(self):
+        super().__init__("Somente o proprietário do usuário ou admin pode realizar esta ação.")
+
+
 class ApenasAdminPodeAcessarError(Exception):
     """Apenas administradores podem acessar."""
     def __init__(self):
@@ -50,13 +76,18 @@ def tratar_erro_dominio(error: Exception) -> HTTPException:
     match error:
         case OrdemServicoNotFoundError() | VeiculoNotFoundError():
             return HTTPException(status.HTTP_404_NOT_FOUND, detail=str(error))
+        
         case ApenasAdminPodeAcessarError() \
             | ApenasMecanicosPodemAcessarError() \
-            | ApenasClientesPodemAcessarError():
+            | ApenasClientesPodemAcessarError() \
+            | ClienteNotFoundError() \
+            | FuncionarioNotFoundError():
             return HTTPException(status.HTTP_403_FORBIDDEN, detail=str(error))
+        
         case TokenInvalidoError() \
             | ValidacaoTokenError():
             return HTTPException(status.HTTP_401_UNAUTHORIZED, detail=str(error)) 
+        
         case _:
             return HTTPException(
                 status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Erro interno"

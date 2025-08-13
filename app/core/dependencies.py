@@ -5,13 +5,13 @@ from sqlalchemy.orm import Session
 
 from app.core.database import get_db
 from app.core.security import decodificar_token_jwt
-from app.modules.usuario.infrastructure.models import FuncionarioModel, ClienteModel
+from app.modules.usuario.infrastructure.models import FuncionarioModel, ClienteModel, UsuarioModel
 from app.core.exceptions import ValidacaoTokenError, TokenInvalidoError, ApenasClientesPodemAcessarError, ApenasMecanicosPodemAcessarError, ApenasAdminPodeAcessarError
 
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/usuarios/login")
 
-def obter_usuario_logado(token: str = Depends(oauth2_scheme)) -> int:
+def obter_id_usuario_logado(token: str = Depends(oauth2_scheme)) -> int:
     """Dependência que valida o JWT e retorna o ID do usuário."""
     try:
         usuario_id = decodificar_token_jwt(token)
@@ -22,8 +22,20 @@ def obter_usuario_logado(token: str = Depends(oauth2_scheme)) -> int:
         raise ValidacaoTokenError
 
 
+def obter_usuario_logado(
+    usuario_id: int = Depends(obter_id_usuario_logado), 
+    db: Session = Depends(get_db)
+) -> UsuarioModel | None:
+    usuario_logado = db.query(UsuarioModel).filter(
+        UsuarioModel.usuario_id == usuario_id
+    ).first()
+    if not usuario_logado:
+        raise TokenInvalidoError
+    return usuario_logado
+
+
 def obter_cliente_logado(
-    usuario_id: int = Depends(obter_usuario_logado), 
+    usuario_id: int = Depends(obter_id_usuario_logado), 
     db: Session = Depends(get_db)
 ) -> ClienteModel | None:
     cliente_logado = db.query(ClienteModel).filter(
@@ -35,7 +47,7 @@ def obter_cliente_logado(
 
 
 def obter_admin_logado(
-    usuario_id: int = Depends(obter_usuario_logado), 
+    usuario_id: int = Depends(obter_id_usuario_logado), 
     db: Session = Depends(get_db)
 ) -> FuncionarioModel:
     funci_logado = db.query(FuncionarioModel).filter(
@@ -50,7 +62,7 @@ def obter_admin_logado(
 
 
 def obter_mecanico_logado(
-    usuario_id: int = Depends(obter_usuario_logado), 
+    usuario_id: int = Depends(obter_id_usuario_logado), 
     db: Session = Depends(get_db)
 ) -> FuncionarioModel:
     funci_logado = db.query(FuncionarioModel).filter(

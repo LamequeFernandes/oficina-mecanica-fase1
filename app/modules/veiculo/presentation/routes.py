@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from app.core.database import get_db
-from app.core.dependencies import obter_usuario_logado, obter_cliente_logado
+from app.core.dependencies import obter_id_usuario_logado, obter_cliente_logado
 from ..application.use_cases import CriarVeiculoUseCase
 from ..application.dto import VeiculoInputDTO
 

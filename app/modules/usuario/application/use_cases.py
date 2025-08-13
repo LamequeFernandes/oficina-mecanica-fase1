@@ -1,18 +1,20 @@
+from sqlalchemy.orm import Session
+
+from app.core.exceptions import ClienteNotFoundError, FuncionarioNotFoundError, SomenteProprietarioDoUsuarioError, SomenteProprietarioOuAdminError
 from app.core.security import criar_hash_senha, criar_token_jwt, verificar_senha
+from app.modules.usuario.infrastructure.mapper import ClienteMapper, FuncionarioMapper
+from app.modules.usuario.infrastructure.models import ClienteModel, UsuarioModel
 from app.modules.usuario.infrastructure.repositories import AuthRepository, ClienteRepository, FuncionarioRepository
 from ..domain.entities import Cliente, Usuario, Funcionario
-from .dto import ClienteInputDTO, ClienteOutputDTO, FuncionarioInputDTO, FuncionarioOutputDTO, LoginInputDTO, LoginOutputDTO
+from .dto import ClienteAlteracaoInputDTO, ClienteInputDTO, ClienteOutputDTO, FuncionarioInputDTO, FuncionarioOutputDTO, LoginOutputDTO
+
 
 class CriarClienteUseCase:
-    def __init__(self, repo: ClienteRepository):
-        self.repo = repo
+    def __init__(self, db: Session):
+        self.repo = ClienteRepository(db)
 
     def executar(self, dados: ClienteInputDTO) -> ClienteOutputDTO:
-        # 1. Hash da senha
         senha_hash = criar_hash_senha(dados.senha)
-        
-        # 1. Validar CPF (pode usar o Value Object)
-        # 2. Criar entidades
         usuario = Usuario(
             usuario_id=None, 
             email=dados.email, 
@@ -26,27 +28,82 @@ class CriarClienteUseCase:
             tipo=dados.tipo
         )
 
-        # 3. Persistir
         cliente_salvo = self.repo.salvar(cliente)
+        return ClienteMapper.entity_to_output_dto(cliente_salvo)
+    
 
-        # 4. Retornar DTO de saída
-        return ClienteOutputDTO(
-            cliente_id=cliente_salvo.cliente_id, # type: ignore
-            nome=cliente_salvo.usuario.nome,
-            email=cliente_salvo.usuario.email
-        )
+class AlterarClienteUseCase:
+    def __init__(self, db: Session, cliente_logado: ClienteModel):
+        self.repo = ClienteRepository(db)
+        self.cliente_logado = cliente_logado
+
+    def executar(self, cliente_id: int, dados: ClienteAlteracaoInputDTO) -> ClienteOutputDTO:
+        if self.cliente_logado.cliente_id != cliente_id: # type: ignore
+            raise SomenteProprietarioDoUsuarioError
+
+        cliente = self.repo.buscar_por_id(cliente_id)
+        if not cliente:
+            raise ClienteNotFoundError(cliente_id)
+
+        cliente.usuario.email = dados.email
+        cliente.usuario.senha = criar_hash_senha(dados.senha)
+        cliente.usuario.nome = dados.nome
+        cliente.cpf_cnpj = dados.cpf_cnpj
+        cliente.tipo = dados.tipo
+
+        cliente_alterado = self.repo.alterar(cliente)
+        return ClienteMapper.entity_to_output_dto(cliente_alterado) # type: ignore
+    
+
+class RemoverClienteUseCase:
+    def __init__(self, db: Session, usuario_logado: UsuarioModel):
+        self.repo = ClienteRepository(db)
+        self.usuario_logado = usuario_logado
+
+    def usuario_logado_eh_admin(self) -> bool:
+        if self.usuario_logado.funcionario:
+            return self.usuario_logado.funcionario.tipo_funcionario == 'ADMINISTRADOR' # type: ignore
+        return False
+
+    def usuario_logado_eh_proprietario_conta(self, cliente_id: int) -> bool:
+        if self.usuario_logado.cliente:
+            return self.usuario_logado.cliente.cliente_id == cliente_id
+        return False
+
+    def executar(self, cliente_id: int) -> None:
+        if not self.usuario_logado_eh_proprietario_conta(cliente_id) and not self.usuario_logado_eh_admin():
+            raise SomenteProprietarioOuAdminError
+
+        cliente = self.repo.buscar_por_id(cliente_id)
+        if not cliente:
+            raise ClienteNotFoundError(cliente_id)
+        self.repo.remover(cliente_id)
+
+
+class ConsultarClienteUseCase:
+    def __init__(self, db: Session):
+        self.repo = ClienteRepository(db)
+
+    def executar_consulta_por_id(self, cliente_id: int) -> ClienteOutputDTO:
+        cliente = self.repo.buscar_por_id(cliente_id)
+        if not cliente:
+            raise ClienteNotFoundError(cliente_id)
+
+        return ClienteMapper.entity_to_output_dto(cliente)
+
+    def executar_consulta_por_cpf_cnpj(self, cpf_cnpj: str) -> ClienteOutputDTO:
+        cliente = self.repo.buscar_por_cpf_cnpj(cpf_cnpj)
+        if not cliente:
+            raise ClienteNotFoundError
+        return ClienteMapper.entity_to_output_dto(cliente)
 
 
 class CriarFuncionarioUseCase:
-    def __init__(self, repo: FuncionarioRepository):
-        self.repo = repo
+    def __init__(self, db: Session):
+        self.repo = FuncionarioRepository(db)
 
-    def executar(self, dados: FuncionarioInputDTO) -> ClienteOutputDTO:
-        # 1. Hash da senha
+    def executar(self, dados: FuncionarioInputDTO) -> FuncionarioOutputDTO:
         senha_hash = criar_hash_senha(dados.senha)
-        
-        # 1. Validar CPF (pode usar o Value Object)
-        # 2. Criar entidades
         usuario = Usuario(
             usuario_id=None, 
             email=dados.email, 
@@ -60,16 +117,70 @@ class CriarFuncionarioUseCase:
             tipo=dados.tipo
         )
 
-        # 3. Persistir
         funcionario_salvo = self.repo.salvar(funcionario)
+        return FuncionarioMapper.entity_to_output_dto(funcionario_salvo)
 
-        # 4. Retornar DTO de saída
-        return FuncionarioOutputDTO(
-            funcionario_id=funcionario_salvo.funcionario_id, # type: ignore
-            nome=funcionario_salvo.usuario.nome,
-            email=funcionario_salvo.usuario.email,
-            matricula=funcionario.matricula
-        )
+
+class ConsultarFuncionarioUseCase:
+    def __init__(self, db: Session):
+        self.repo = FuncionarioRepository(db)
+    
+    def executar_consulta_por_id(self, funcionario_id: int) -> FuncionarioOutputDTO:
+        funcionario = self.repo.buscar_por_id(funcionario_id)
+        if not funcionario:
+            raise FuncionarioNotFoundError(funcionario_id)
+        return FuncionarioMapper.entity_to_output_dto(funcionario)
+
+    def executar_consulta_por_matricula(self, matricula: int) -> FuncionarioOutputDTO:
+        funcionario = self.repo.buscar_por_matricula(matricula)
+        if not funcionario:
+            raise FuncionarioNotFoundError(matricula)
+        return FuncionarioMapper.entity_to_output_dto(funcionario)
+
+
+class AlterarFuncionarioUseCase:
+    def __init__(self, db: Session):
+        self.repo = FuncionarioRepository(db)
+
+    def executar(self, funcionario_id: int, dados: FuncionarioInputDTO) -> FuncionarioOutputDTO:
+        funcionario = self.repo.buscar_por_id(funcionario_id)
+        if not funcionario:
+            raise FuncionarioNotFoundError(funcionario_id)
+
+        funcionario.matricula = dados.matricula
+        funcionario.tipo = dados.tipo
+        funcionario.usuario.email = dados.email
+        funcionario.usuario.nome = dados.nome
+        funcionario.usuario.senha = criar_hash_senha(dados.senha)
+
+        funcionario_alterado = self.repo.alterar(funcionario)
+        return FuncionarioMapper.entity_to_output_dto(funcionario_alterado) # type: ignore
+
+
+class RemoverFuncionarioUseCase:
+    def __init__(self, db: Session, usuario_logado: UsuarioModel):
+        self.repo = FuncionarioRepository(db)
+        self.usuario_logado = usuario_logado
+
+    def usuario_logado_eh_admin(self) -> bool:
+        if self.usuario_logado.funcionario:
+            return self.usuario_logado.funcionario.tipo_funcionario == 'ADMINISTRADOR'
+        return False
+
+    def usuario_logado_eh_proprietario_conta(self, funcionario_id: int) -> bool:
+        if self.usuario_logado.funcionario:
+            return self.usuario_logado.funcionario.funcionario_id == funcionario_id
+        return False
+
+    def executar(self, funcionario_id: int) -> None:
+        if not self.usuario_logado_eh_proprietario_conta(funcionario_id) and not self.usuario_logado_eh_admin():
+            raise SomenteProprietarioOuAdminError
+
+        funcionario = self.repo.buscar_por_id(funcionario_id)
+        if not funcionario:
+            raise FuncionarioNotFoundError(funcionario_id)
+        
+        self.repo.remover(funcionario_id)
 
 
 class LoginUseCase:
@@ -77,19 +188,12 @@ class LoginUseCase:
         self.auth_repo = auth_repo
 
     def execute(self, email: str, senha: str) -> LoginOutputDTO:
-        # 1. Buscar usuário por email
         usuario = self.auth_repo.buscar_por_email(email)
         if not usuario:
             raise ValueError("Credenciais inválidas")
 
-        # 2. Verificar senha
         if not verificar_senha(senha, usuario.senha): # type: ignore
             raise ValueError("Credenciais inválidas")
 
-        # 3. Identificar tipo de usuário (Cliente ou Funcionário)
-        tipo_usuario = self.auth_repo.obter_tipo_usuario(usuario.usuario_id) # type: ignore
-
-        # 4. Gerar token JWT
         token = criar_token_jwt(usuario.usuario_id)  # type: ignore
-
         return LoginOutputDTO(access_token=token)

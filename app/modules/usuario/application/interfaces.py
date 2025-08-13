@@ -8,11 +8,19 @@ class ClienteRepositoryInterface(ABC):
         pass
 
     @abstractmethod
-    def buscar_por_cpf(self, cpf: str) -> Cliente | None:
+    def buscar_por_cpf_cnpj(self, cpf: str) -> Cliente | None:
         pass
 
     @abstractmethod
-    def buscar_todos(self,) -> list[Cliente] | None:
+    def buscar_por_id(self, id: int) -> Cliente | None:
+        pass
+    
+    @abstractmethod
+    def alterar(self, cliente: Cliente) -> Cliente | None:
+        pass
+
+    @abstractmethod
+    def remover(self, cliente_id: int) -> None:
         pass
 
 
@@ -22,9 +30,17 @@ class FuncionarioRepositoryInterface(ABC):
         pass
 
     @abstractmethod
-    def buscar_por_matricula(self, cpf: str) -> Funcionario | None:
+    def buscar_por_matricula(self, matricula: int) -> Funcionario | None:
         pass 
 
     @abstractmethod
-    def buscar_todos(self,) -> list[Funcionario] | None:
+    def buscar_por_id(self, id: int) -> Funcionario | None:
+        pass
+
+    @abstractmethod
+    def alterar(self, funcionario: Funcionario) -> Funcionario | None:
+        pass
+
+    @abstractmethod
+    def remover(self, funcionario_id: int) -> None:
         pass
