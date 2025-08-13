@@ -6,7 +6,7 @@ from app.modules.usuario.application.use_cases import AlterarClienteUseCase, Con
 from app.modules.usuario.application.dto import ClienteInputDTO, ClienteOutputDTO
 
 
-router = APIRouter(prefix="/clientes")
+router = APIRouter()
 
 @router.post("/cadastrar", response_model=ClienteOutputDTO, status_code=201)
 def criar_cliente(

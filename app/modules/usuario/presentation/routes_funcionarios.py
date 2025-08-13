@@ -6,7 +6,7 @@ from app.modules.usuario.application.use_cases import AlterarFuncionarioUseCase,
 from app.modules.usuario.application.dto import FuncionarioInputDTO, FuncionarioOutputDTO
 
 
-router = APIRouter(prefix="/funcionarios")
+router = APIRouter()
 
 @router.post("/cadastrar", response_model=FuncionarioOutputDTO, status_code=201)
 def criar_funcionario(

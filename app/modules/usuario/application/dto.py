@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, validator
 
 
 class ClienteInputDTO(BaseModel):
@@ -15,6 +15,12 @@ class ClienteOutputDTO(BaseModel):
     email: str
     cpf_cnpj: str
     tipo: str
+
+    @validator('cpf_cnpj')
+    def validar_cpf_cnpj(cls, v):
+        if len(v) == 11:
+            return f'{v[:3]}.***.***-{v[9:]}'
+        return f'{v[:2]}.{v[2:5]}.{v[5:8]}/{v[8:12]}-{v[12:]}'
 
 
 class FuncionarioInputDTO(BaseModel):
