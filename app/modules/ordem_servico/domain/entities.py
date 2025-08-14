@@ -19,8 +19,8 @@ class StatusOrdemServico(StrEnum):
 class OrdemServico:
     ordem_servico_id: int | None
     veiculo_id: int
-    veiculo: Veiculo
     status: StatusOrdemServico
+    veiculo: Veiculo | None = None
     observacoes: str | None = None
     dta_criacao: datetime = datetime.now()
     dta_finalizacao: datetime | None = None

@@ -1,5 +1,5 @@
 from enum import StrEnum
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from datetime import datetime
 
 from app.modules.peca.domain.entities import Peca
@@ -24,8 +24,8 @@ class Orcamento:
     dta_criacao: datetime = datetime.now()
     dta_cancelamento: datetime | None = None
 
-    servicos: list[Servico] = []
-    pecas: list[Peca] = []
+    servicos: list[Servico] = field(default_factory=list)
+    pecas: list[Peca] = field(default_factory=list)
 
     def __post_init__(self):
         soma_valor_servico = sum(

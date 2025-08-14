@@ -53,7 +53,7 @@ class OrdemServicoMapper:
                 ano=ordem_servico.veiculo.ano, 
                 cliente_id=ordem_servico.veiculo.cliente_id,
                 dta_cadastro=ordem_servico.veiculo.dta_cadastro 
-            ),
+            ) if ordem_servico.veiculo else None ,
             dta_criacao=ordem_servico.dta_criacao,
             orcamento=OrcamentoMapper.entity_to_output_dto(ordem_servico.orcamento) if ordem_servico.orcamento else None,
             observacoes=ordem_servico.observacoes,

@@ -11,12 +11,8 @@ class OrdemServicoRepository(OrdemServicoRepositoryInterface):
     def __init__(self, db: Session):
         self.db = db
 
-    def salvar(self, dados: OrdemServico) -> OrdemServico:
-        ordem_servico_model = OrdemServicoModel(
-            veiculo_id=dados.veiculo_id,
-            status=dados.status,
-            obsercacoes=dados.observacoes
-        )
+    def salvar(self, ordem_servico: OrdemServico) -> OrdemServico:
+        ordem_servico_model = OrdemServicoMapper.entity_to_model(ordem_servico)
 
         self.db.add(ordem_servico_model)
         self.db.commit()
@@ -61,4 +57,8 @@ class OrdemServicoRepository(OrdemServicoRepositoryInterface):
     
 
     def buscar_por_cliente(self, cliente_id: int) -> OrdemServico | None:
+        pass
+
+
+    def remover(self, ordem_servico_id: int) -> None:
         pass
