@@ -1,6 +1,8 @@
 from enum import Enum, StrEnum
 from dataclasses import dataclass
 from datetime import datetime
+
+from app.modules.orcamento.domain.entities import Orcamento
 from ...veiculo.domain.entities import Veiculo
 
 
@@ -12,12 +14,14 @@ class StatusOrdemServico(StrEnum):
     FINALIZADA = "FINALIZADA"
     ENTREGUE = "ENTREGUE"
 
+
 @dataclass
 class OrdemServico:
     ordem_servico_id: int | None
     veiculo_id: int
+    veiculo: Veiculo
     status: StatusOrdemServico
-    veiculo: Veiculo | None = None
     observacoes: str | None = None
     dta_criacao: datetime = datetime.now()
     dta_finalizacao: datetime | None = None
+    orcamento: Orcamento | None = None  

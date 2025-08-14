@@ -22,3 +22,7 @@ class OrdemServicoRepositoryInterface(ABC):
     @abstractmethod
     def alterar_status(self, ordem_servico_id: int, status: StatusOrdemServico) -> OrdemServico | None:
         pass
+
+    @abstractmethod
+    def remover(self, ordem_servico_id: int) -> None:
+        pass
