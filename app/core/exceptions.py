@@ -2,6 +2,11 @@
 from fastapi import HTTPException, status
 
 
+class NaoEncontradoError(Exception):
+    """Recurso não encontrado."""
+    def __init__(self, recurso: str, id: int | None = None):
+        super().__init__(f"{recurso} {f'ID {id}' if id else ''} não encontrado.")
+
 class OrdemServicoNotFoundError(Exception):
     """Ordem de serviço não encontrada."""
     def __init__(self, ordem_servico_id: int | None = None):
@@ -10,9 +15,9 @@ class OrdemServicoNotFoundError(Exception):
 
 
 class VeiculoNotFoundError(Exception):
-    """Veículo foi encontrado."""
+    """Veículo não foi encontrado."""
     def __init__(self, veiculo_id: int | None = None):
-        super().__init__(f"Veículo {f'ID {veiculo_id}' if veiculo_id else ''}não encontrado.")
+        super().__init__(f"Veículo {f'ID {veiculo_id} ' if veiculo_id else ''}não encontrado.")
         self.veiculo_id = veiculo_id
 
 
@@ -60,6 +65,12 @@ class ApenasClientesPodemAcessarError(Exception):
         super().__init__("Apenas clientes podem acessar")
 
 
+class ApenasFuncionariosProprietariosError(Exception):
+    """Apenas funcionários e cliente vinculados podem acessar"""
+    def __init__(self):
+        super().__init__("Apenas funcionários e cliente vinculados podem acessar")
+
+
 class TokenInvalidoError(Exception):
     """Token inválido ou expirado"""
     def __init__(self):
@@ -98,13 +109,21 @@ class ValorDuplicadoError(Exception):
         self.chave = chave
 
 
+class PadraoPlacaIncorretoError(Exception):
+    """Padrão da placa incorreto."""
+    def __init__(self):
+        super().__init__("Padrão da placa incorreto, exemplo correto: 'AAA2A22' ou 'AAA2222'.")
+
 def tratar_erro_dominio(error: Exception) -> HTTPException:
     erros = {
         "status_400": (
+            ValueError,
             TamanhoCPFInvalidoError,
             TamanhoCNPJInvalidoError,
             TipoInvalidoClienteError,
             ValorDuplicadoError,
+            PadraoPlacaIncorretoError,
+            VeiculoNotFoundError,
         ),
         "status_401": (
             TokenInvalidoError,

@@ -1,7 +1,9 @@
 from sqlalchemy.orm import Session
+from sqlalchemy.exc import IntegrityError
 
-from app.core.exceptions import ClienteNotFoundError, FuncionarioNotFoundError, SomenteProprietarioDoUsuarioError, SomenteProprietarioOuAdminError
+from app.core.exceptions import ClienteNotFoundError, FuncionarioNotFoundError, SomenteProprietarioDoUsuarioError, SomenteProprietarioOuAdminError, ValorDuplicadoError
 from app.core.security import criar_hash_senha, criar_token_jwt, verificar_senha
+from app.core.utils import obter_valor_e_key_duplicado_integrity_error
 from app.modules.usuario.infrastructure.mapper import ClienteMapper, FuncionarioMapper
 from app.modules.usuario.infrastructure.models import ClienteModel, UsuarioModel
 from app.modules.usuario.infrastructure.repositories import AuthRepository, ClienteRepository, FuncionarioRepository
@@ -28,7 +30,11 @@ class CriarClienteUseCase:
             tipo=dados.tipo
         )
 
-        cliente_salvo = self.repo.salvar(cliente)
+        try:
+            cliente_salvo = self.repo.salvar(cliente)
+        except IntegrityError as e:
+            valor_duplicado, chave = obter_valor_e_key_duplicado_integrity_error(e)
+            raise ValorDuplicadoError(valor_duplicado, chave)
         return ClienteMapper.entity_to_output_dto(cliente_salvo)
     
 
@@ -51,7 +57,11 @@ class AlterarClienteUseCase:
         cliente.cpf_cnpj = dados.cpf_cnpj
         cliente.tipo = dados.tipo
 
-        cliente_alterado = self.repo.alterar(cliente)
+        try:
+            cliente_alterado = self.repo.alterar(cliente)
+        except IntegrityError as e:
+            valor_duplicado, chave = obter_valor_e_key_duplicado_integrity_error(e)
+            raise ValorDuplicadoError(valor_duplicado, chave)
         return ClienteMapper.entity_to_output_dto(cliente_alterado) # type: ignore
     
 
