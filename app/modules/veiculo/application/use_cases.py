@@ -31,7 +31,7 @@ class CriarVeiculoUseCase:
         return VeiculoMapper.entity_to_output_dto(veiculo_salvo)
 
 
-class ConsultarVeiculo:
+class ConsultarVeiculoUseCase:
     def __init__(self, db: Session, usuario_logado: UsuarioModel):
         self.repo = VeiculoRepository(db)
         self.usuario_logado = usuario_logado

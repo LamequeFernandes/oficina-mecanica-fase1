@@ -9,7 +9,7 @@ class OrcamentoModel(Base):
 
     orcamento_id = Column(Integer, primary_key=True, autoincrement=True)
     status_orcamento = Column(
-        Enum('AGUARDANDO_APROVACAO', 'APROVADO', 'CANCELADO', name='status_orcamento'),
+        Enum('AGUARDANDO_APROVACAO', 'APROVADO', name='status_orcamento'),
         nullable=False
     )
     ordem_servico_id = Column(Integer, ForeignKey('ordem_servico.ordem_servico_id'), nullable=False)

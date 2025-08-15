@@ -2,13 +2,13 @@ from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 from app.core.database import get_db
 from app.core.dependencies import obter_cliente_logado, obter_usuario_logado
-from ..application.use_cases import CriarVeiculoUseCase, ConsultarVeiculo, AlterarVeiculoUseCase, RemoverVeiculoUseCase
+from ..application.use_cases import CriarVeiculoUseCase, ConsultarVeiculoUseCase, AlterarVeiculoUseCase, RemoverVeiculoUseCase
 from ..application.dto import VeiculoInputDTO, VeiculoOutputDTO
 
 
 router = APIRouter()
 
-@router.post("/", response_model=VeiculoOutputDTO)
+@router.post("/", response_model=VeiculoOutputDTO, status_code=201)
 def criar_veiculo(
     veiculo_data: VeiculoInputDTO,
     cliente = Depends(obter_cliente_logado), 
@@ -24,7 +24,7 @@ def buscar_veiculo_por_id(
     usuario = Depends(obter_usuario_logado),
     db: Session = Depends(get_db),
 ):
-    use_case = ConsultarVeiculo(db, usuario)
+    use_case = ConsultarVeiculoUseCase(db, usuario)
     return use_case.execute(veiculo_id)
 
 
@@ -39,7 +39,7 @@ def alterar_veiculo(
     return use_case.execute(veiculo_id, veiculo_data)
 
 
-@router.delete("/{veiculo_id}")
+@router.delete("/{veiculo_id}", status_code=204)
 def remover_veiculo(
     veiculo_id: int,
     usuario = Depends(obter_usuario_logado),

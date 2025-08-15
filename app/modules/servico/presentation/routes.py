@@ -8,7 +8,7 @@ from ..application.dto import TipoServicoInputDTO, TipoServicoOutDTO, ServicoInp
 
 router = APIRouter()
 
-@router.post("/", response_model=ServicoOutDTO)
+@router.post("/", response_model=ServicoOutDTO, status_code=201)
 def criar_servico(dados: ServicoInputDTO, db: Session = Depends(get_db), funcionario=Depends(obter_funcionario_logado)):
     use_case = CriarServicoUseCase(db)
     return use_case.execute(dados)
@@ -26,13 +26,13 @@ def alterar_servico(servico_id: int, dados: ServicoInputDTO, db: Session = Depen
     return use_case.execute(servico_id, dados)
 
 
-@router.delete("/{servico_id}", response_model=None)
+@router.delete("/{servico_id}", response_model=None, status_code=204)
 def remover_servico(servico_id: int, db: Session = Depends(get_db), funcionario=Depends(obter_funcionario_logado)):
     use_case = RemoverServicoUseCase(db)
-    return use_case.execute(servico_id)
+    use_case.execute(servico_id)
 
 
-@router.post("/tipo-servico", response_model=TipoServicoOutDTO)
+@router.post("/tipo-servico", response_model=TipoServicoOutDTO, status_code=201)
 def criar_tipo_servico(dados: TipoServicoInputDTO, db: Session = Depends(get_db), funcionario=Depends(obter_funcionario_logado)):
     use_case = CriarTipoServicoUseCase(db)
     return use_case.execute(dados)

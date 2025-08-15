@@ -10,12 +10,17 @@ from app.modules.servico.domain.entities import Servico
 from app.modules.usuario.application.dto import FuncionarioOutputDTO
 from ...usuario.domain.entities import Funcionario
 
+
 class OrcamentoInputDTO(BaseModel):
-    ordem_servico_id: int
+    orcamento_id: int
+    funcionario_id: int
     status_orcamento: StatusOrcamento
     dta_criacao: datetime = datetime.now()
-    funcionario_id: int
 
+
+class OrcamentoAlteraStatusDTO(BaseModel):
+    status_orcamento: StatusOrcamento
+    
 
 class OrcamentoOutputDTO(BaseModel):
     orcamento_id: int

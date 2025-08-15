@@ -8,7 +8,7 @@ from ..application.dto import OrdemServicoAlteracaoStatusInputDTO, OrdemServicoC
 
 router = APIRouter()
 
-@router.post("/{veiculo_id}/ordens_servico", response_model=OrdemServicoOutputDTO)
+@router.post("/{veiculo_id}/ordens_servico", response_model=OrdemServicoOutputDTO, status_code=201)
 def criar_ordem_servico(
     veiculo_id: int, 
     ordem_servico_data: OrdemServicoCriacaoInputDTO,

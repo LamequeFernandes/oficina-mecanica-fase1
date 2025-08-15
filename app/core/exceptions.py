@@ -130,6 +130,12 @@ class ObjetoPossuiVinculoError(Exception):
         self.objeto_vinculado = objeto_vinculado
 
 
+class ApenasMecanicoResponsavel(Exception):
+    """Apenas o mecânico responsável pode realizar esta ação."""
+    def __init__(self):
+        super().__init__("Apenas o mecânico responsável pode realizar esta ação.")
+
+
 def tratar_erro_dominio(error: Exception) -> HTTPException:
     erros = {
         "status_400": (
@@ -150,6 +156,7 @@ def tratar_erro_dominio(error: Exception) -> HTTPException:
             ApenasMecanicosPodemAcessarError,
             ApenasClientesPodemAcessarError,
             ApenasFuncionariosError,
+            ApenasMecanicoResponsavel,
             ClienteNotFoundError,
             FuncionarioNotFoundError,
             SomenteProprietarioDoUsuarioError,

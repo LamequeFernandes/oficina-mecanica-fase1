@@ -10,7 +10,6 @@ from ...usuario.domain.entities import Funcionario
 class StatusOrcamento(StrEnum):
     AGUARDANDO_APROVACAO = "AGUARDANDO_APROVACAO"
     APROVADO = "APROVADO"
-    CANCELADO = "CANCELADO"
 
 
 @dataclass
@@ -19,7 +18,7 @@ class Orcamento:
     funcionario_id: int
     status_orcamento: StatusOrcamento
     ordem_servico_id: int
-    funcionario: Funcionario # VER DPS SE PODE SER NULO TODO
+    funcionario: Funcionario | None = None # VER DPS SE PODE SER NULO TODO
     valor_total_orcamento: float | None = None
     dta_criacao: datetime = datetime.now()
     dta_cancelamento: datetime | None = None

@@ -8,7 +8,7 @@ from ..application.dto import TipoPecaInputDTO, TipoPecaOutDTO, PecaInputDTO, Pe
 
 router = APIRouter()
 
-@router.post("/", response_model=PecaOutDTO)
+@router.post("/", response_model=PecaOutDTO, status_code=201)
 def criar_peca(dados: PecaInputDTO, db: Session = Depends(get_db), funcionario=Depends(obter_funcionario_logado)):
     use_case = CriarPecaUseCase(db)
     return use_case.execute(dados)
@@ -32,7 +32,7 @@ def listar_pecas(db: Session = Depends(get_db), funcionario=Depends(obter_funcio
     return use_case.execute()
 
 
-@router.post("/tipo-peca", response_model=TipoPecaOutDTO)
+@router.post("/tipo-peca", response_model=TipoPecaOutDTO, status_code=201)
 def criar_tipo_peca(dados: TipoPecaInputDTO, db: Session = Depends(get_db), funcionario=Depends(obter_funcionario_logado)):
     use_case = CriarTipoPecaUseCase(db)
     return use_case.execute(dados)

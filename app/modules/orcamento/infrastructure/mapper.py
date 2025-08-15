@@ -44,7 +44,7 @@ class OrcamentoMapper:
             valor_total_orcamento=orcamento.valor_total_orcamento, # type: ignore
             funcionario_id=orcamento.funcionario_id,
             dta_criacao=orcamento.dta_criacao,
-            funcionario_responsavel=FuncionarioMapper.entity_to_output_dto(orcamento.funcionario),
+            funcionario_responsavel=FuncionarioMapper.entity_to_output_dto(orcamento.funcionario), # type: ignore
             servicos_inclusos=[ServicoMapper.entity_to_output_dto(servico) for servico in orcamento.servicos],
             pecas_necessarias=[PecaMapper.entity_to_output_dto(peca) for peca in orcamento.pecas],
             dta_cancelamento=orcamento.dta_cancelamento
