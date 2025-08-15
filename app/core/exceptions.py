@@ -136,6 +136,12 @@ class ApenasMecanicoResponsavel(Exception):
         super().__init__("Apenas o mecânico responsável pode realizar esta ação.")
 
 
+class StatusOSInvalido(Exception):
+    """Status da Ordem de Serviço inválido."""
+    def __init__(self, status_atual: str, status_permitido: str):
+        super().__init__(f"O Status atual da Ordem de Serviço é '{status_atual}', portanto, só pode ser alterada para '{status_atual}'.")
+
+
 def tratar_erro_dominio(error: Exception) -> HTTPException:
     erros = {
         "status_400": (
@@ -146,6 +152,7 @@ def tratar_erro_dominio(error: Exception) -> HTTPException:
             ValorDuplicadoError,
             PadraoPlacaIncorretoError,
             VeiculoNotFoundError,
+            StatusOSInvalido,
         ),
         "status_401": (
             TokenInvalidoError,

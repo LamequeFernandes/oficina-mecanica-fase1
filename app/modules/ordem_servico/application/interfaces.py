@@ -12,15 +12,23 @@ class OrdemServicoRepositoryInterface(ABC):
         pass
 
     @abstractmethod
-    def buscar_por_veiculo(self, veiculo_id: int) -> list[OrdemServico] | None:
+    def buscar_por_veiculo(self, veiculo_id: int) -> list[OrdemServico]:
         pass
 
     @abstractmethod
-    def buscar_por_cliente(self, cliente_id: int) -> OrdemServico | None:
+    def buscar_por_cliente(self, cliente_id: int) -> list[OrdemServico]:
         pass
 
     @abstractmethod
-    def alterar_status(self, ordem_servico_id: int, status: StatusOrdemServico) -> OrdemServico | None:
+    def listar(self) -> list[OrdemServico]:
+        pass
+
+    @abstractmethod
+    def alterar(self, ordem_servico: OrdemServico) -> OrdemServico:
+        pass
+
+    @abstractmethod
+    def alterar_status(self, ordem_servico_id: int, status: StatusOrdemServico) -> OrdemServico:
         pass
 
     @abstractmethod
