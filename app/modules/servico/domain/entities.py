@@ -11,7 +11,8 @@ class TipoServico:
 @dataclass
 class Servico:
     servico_id: int | None
-    tipo_servico: TipoServico
+    tipo_servico_id: int
     valor_servico: float
-    orcamento_id: int | None
+    orcamento_id: int | None = None
+    tipo_servico: TipoServico | None = None
 

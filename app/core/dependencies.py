@@ -6,7 +6,7 @@ from sqlalchemy.orm import Session
 from app.core.database import get_db
 from app.core.security import decodificar_token_jwt
 from app.modules.usuario.infrastructure.models import FuncionarioModel, ClienteModel, UsuarioModel
-from app.core.exceptions import ValidacaoTokenError, TokenInvalidoError, ApenasClientesPodemAcessarError, ApenasMecanicosPodemAcessarError, ApenasAdminPodeAcessarError
+from app.core.exceptions import ApenasFuncionariosError, ValidacaoTokenError, TokenInvalidoError, ApenasClientesPodemAcessarError, ApenasMecanicosPodemAcessarError, ApenasAdminPodeAcessarError
 
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/usuarios/login")
@@ -44,6 +44,18 @@ def obter_cliente_logado(
     if not cliente_logado:
         raise ApenasClientesPodemAcessarError
     return cliente_logado
+
+
+def obter_funcionario_logado(
+    usuario_id: int = Depends(obter_id_usuario_logado), 
+    db: Session = Depends(get_db)
+) -> FuncionarioModel | None:
+    funci_logado = db.query(FuncionarioModel).filter(
+        FuncionarioModel.usuario_id == usuario_id
+    ).first()
+    if not funci_logado:
+        raise ApenasFuncionariosError
+    return funci_logado
 
 
 def obter_admin_logado(

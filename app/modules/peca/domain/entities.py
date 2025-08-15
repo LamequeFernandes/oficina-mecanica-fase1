@@ -12,7 +12,7 @@ class TipoPeca:
 class Peca:
     peca_id: int | None
     tipo_peca_id: int
-    tipo_peca: TipoPeca
     valor_peca: float
     marca: str
-    orcamento_id: int | None
+    orcamento_id: int | None = None
+    tipo_peca: TipoPeca | None = None

@@ -65,6 +65,12 @@ class ApenasClientesPodemAcessarError(Exception):
         super().__init__("Apenas clientes podem acessar")
 
 
+class ApenasFuncionariosError(Exception):
+    """Apenas funcionários podem acessar"""
+    def __init__(self):
+        super().__init__("Apenas funcionários podem acessar")
+
+
 class ApenasFuncionariosProprietariosError(Exception):
     """Apenas funcionários e cliente vinculados podem acessar"""
     def __init__(self):
@@ -114,6 +120,16 @@ class PadraoPlacaIncorretoError(Exception):
     def __init__(self):
         super().__init__("Padrão da placa incorreto, exemplo correto: 'AAA2A22' ou 'AAA2222'.")
 
+
+class ObjetoPossuiVinculoError(Exception):
+    """Objeto possui vínculo com outro."""
+    def __init__(self, objeto: str, objeto_id: int, objeto_vinculado: str):
+        super().__init__(f"{objeto} com ID {objeto_id} possui vínculo um(a) {objeto_vinculado}.")
+        self.objeto = objeto
+        self.objeto_id = objeto_id
+        self.objeto_vinculado = objeto_vinculado
+
+
 def tratar_erro_dominio(error: Exception) -> HTTPException:
     erros = {
         "status_400": (
@@ -133,6 +149,7 @@ def tratar_erro_dominio(error: Exception) -> HTTPException:
             ApenasAdminPodeAcessarError,
             ApenasMecanicosPodemAcessarError,
             ApenasClientesPodemAcessarError,
+            ApenasFuncionariosError,
             ClienteNotFoundError,
             FuncionarioNotFoundError,
             SomenteProprietarioDoUsuarioError,
