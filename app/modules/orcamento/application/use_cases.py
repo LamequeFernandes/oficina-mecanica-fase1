@@ -41,6 +41,17 @@ class CriarOrcamentoUseCase:
                 'Ordem de Serviço já possui um orçamento vinculado.'
             )
 
+    def validar_funcionario_vinculado(self, funcionario_id: int) -> None:
+        funcionario = (
+            self.db.query(FuncionarioModel)
+            .filter(FuncionarioModel.funcionario_id == funcionario_id)
+            .first()
+        )
+        if not funcionario:
+            raise NaoEncontradoError('Funcionário', funcionario_id)
+        if funcionario.tipo_funcionario != 'MECANICO': # type: ignore
+            raise ValueError('Funcionário não é um mecânico.')
+
     def executar(
         self, ordem_servico_id: int, dados: OrcamentoInputDTO
     ) -> OrcamentoOutputDTO:
@@ -51,6 +62,7 @@ class CriarOrcamentoUseCase:
             ordem_servico_id=ordem_servico_id,
         )
         self.validar_ordem_servico_vinculada(ordem_servico_id)
+        self.validar_funcionario_vinculado(dados.funcionario_id)
 
         try:
             orcamento_salvo = self.repo.salvar(orcamento)

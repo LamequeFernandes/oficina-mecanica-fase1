@@ -9,7 +9,7 @@ from app.modules.usuario.application.dto import FuncionarioOutputDTO
 
 
 class OrcamentoInputDTO(BaseModel):
-    orcamento_id: int
+    # orcamento_id: int
     funcionario_id: int
     status_orcamento: StatusOrcamento
     dta_criacao: datetime = datetime.now()

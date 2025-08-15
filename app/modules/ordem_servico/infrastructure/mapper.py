@@ -12,7 +12,7 @@ class OrdemServicoMapper:
         """Converte a Entidade para Modelo ORM."""
         return OrdemServicoModel(
             ordem_servico_id=ordem_servico.ordem_servico_id,
-            veiculo_id=ordem_servico.veiculo.veiculo_id,  # type: ignore
+            veiculo_id=ordem_servico.veiculo_id, 
             status=ordem_servico.status.value,
             obsercacoes=ordem_servico.observacoes,
             dta_criacao=ordem_servico.dta_criacao,

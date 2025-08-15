@@ -1,5 +1,9 @@
 from fastapi import HTTPException, status
 
+from sqlalchemy.exc import IntegrityError
+
+from app.core.utils import obter_valor_e_key_duplicado_integrity_error
+
 
 class NaoEncontradoError(Exception):
     """Recurso não encontrado."""
@@ -195,7 +199,6 @@ def tratar_erro_dominio(error: Exception) -> HTTPException:
             TamanhoCPFInvalidoError,
             TamanhoCNPJInvalidoError,
             TipoInvalidoClienteError,
-            ValorDuplicadoError,
             PadraoPlacaIncorretoError,
             VeiculoNotFoundError,
             StatusOSInvalido,
@@ -215,6 +218,9 @@ def tratar_erro_dominio(error: Exception) -> HTTPException:
             SomenteProprietarioDoUsuarioError,
             SomenteProprietarioOuAdminError,
         ),
+        'status_409': (
+            ValorDuplicadoError,
+        )
     }
 
     if isinstance(error, tuple(erros['status_400'])):
@@ -223,6 +229,14 @@ def tratar_erro_dominio(error: Exception) -> HTTPException:
         return HTTPException(status.HTTP_401_UNAUTHORIZED, detail=str(error))
     if isinstance(error, tuple(erros['status_403'])):
         return HTTPException(status.HTTP_403_FORBIDDEN, detail=str(error))
+    if isinstance(error, tuple(erros['status_409'])):
+        return HTTPException(status.HTTP_409_CONFLICT, detail=str(error))
+
+    if isinstance(error, IntegrityError):
+        valor, chave = obter_valor_e_key_duplicado_integrity_error(error)
+        return HTTPException(
+            status.HTTP_409_CONFLICT, detail=f'Já existe registro com {chave}={valor}.'
+        )
     return HTTPException(
         status.HTTP_500_INTERNAL_SERVER_ERROR, detail='Erro interno'
     )

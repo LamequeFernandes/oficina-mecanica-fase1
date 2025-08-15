@@ -133,6 +133,7 @@ class ListarTipoServicoUseCase:
         self.repo = TipoServicoRepository(db)
 
     def execute(self) -> list[TipoServicoOutDTO]:
+        print('aqui')
         tipos_servico = self.repo.listar()
         return [
             TipoServicoMapper.entity_to_output_dto(ts) for ts in tipos_servico

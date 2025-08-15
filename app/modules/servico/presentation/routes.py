@@ -23,6 +23,15 @@ from app.modules.servico.application.dto import (
 router = APIRouter()
 
 
+@router.get('/tipo-servico', response_model=list[TipoServicoOutDTO])
+def listar_tipo_servico(
+    db: Session = Depends(get_db),
+    funcionario=Depends(obter_funcionario_logado),
+):
+    use_case = ListarTipoServicoUseCase(db)
+    return use_case.execute()
+
+
 @router.post('/', response_model=ServicoOutDTO, status_code=201)
 def criar_servico(
     dados: ServicoInputDTO,
@@ -109,12 +118,3 @@ def consultar_tipo_servico(
 ):
     use_case = ConsultarTipoServicoUseCase(db)
     return use_case.execute(tipo_servico_id)
-
-
-@router.get('/tipo-servico', response_model=list[TipoServicoOutDTO])
-def listar_tipo_servico(
-    db: Session = Depends(get_db),
-    funcionario=Depends(obter_funcionario_logado),
-):
-    use_case = ListarTipoServicoUseCase(db)
-    return use_case.execute()

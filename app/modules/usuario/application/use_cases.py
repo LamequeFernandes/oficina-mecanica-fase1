@@ -118,6 +118,11 @@ class RemoverClienteUseCase:
         if self.usuario_logado.cliente:
             return self.usuario_logado.cliente.cliente_id == cliente_id
         return False
+    
+    def cliente_possui_veiculo_vinculado(self) -> bool:
+        if self.usuario_logado.cliente:
+            return bool(self.usuario_logado.cliente.veiculos)
+        return False
 
     def executar(self, cliente_id: int) -> None:
         if (
@@ -129,6 +134,10 @@ class RemoverClienteUseCase:
         cliente = self.repo.buscar_por_id(cliente_id)
         if not cliente:
             raise ClienteNotFoundError(cliente_id)
+
+        if self.cliente_possui_veiculo_vinculado():
+            raise ValueError("O Cliente possui veículos vinculados, primeiro remova os veículos relacionados.")
+
         self.repo.remover(cliente_id)
 
 

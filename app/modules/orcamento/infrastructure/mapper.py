@@ -32,7 +32,7 @@ class OrcamentoMapper:
                 funcionario_id=orcamento_model.funcionario.funcionario_id,  # type: ignore
                 usuario=orcamento_model.funcionario.usuario,  # type: ignore
                 matricula=orcamento_model.funcionario.matricula,  # type: ignore
-                tipo=orcamento_model.funcionario.tipo,  # type: ignore
+                tipo=orcamento_model.funcionario.tipo_funcionario,  # type: ignore
             ),
         )
 

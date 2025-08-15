@@ -1,6 +1,6 @@
 from sqlalchemy.orm import Session
 
-from app.modules.usuario.infrastructure.models import UsuarioModel
+from app.modules.usuario.infrastructure.models import ClienteModel, UsuarioModel
 from app.modules.ordem_servico.domain.entities import OrdemServico
 from .dto import (
     OrdemServicoCriacaoInputDTO,
@@ -15,8 +15,13 @@ from app.core.exceptions import OrdemServicoNotFoundError, StatusOSInvalido
 
 
 class CriarOrdemServicoUseCase:
-    def __init__(self, db: Session):
+    def __init__(self, db: Session, cliente_logado: ClienteModel):
         self.repo = OrdemServicoRepository(db)
+        self.cliente_logado = cliente_logado
+
+    def validar_cliente_dono_veiculo(self, veiculo_id: int):
+        if veiculo_id not in [veiculo.veiculo_id for veiculo in self.cliente_logado.veiculos]:
+            raise ValueError("Cliente não é o proprietário do veículo.")
 
     def execute(
         self, veiculo_id: int, dados: OrdemServicoCriacaoInputDTO
@@ -36,6 +41,13 @@ class AlterarStatusOrdemServicoUseCase:
     def __init__(self, db: Session, funcionario_logado: UsuarioModel):
         self.repo = OrdemServicoRepository(db)
         self.funcionario_logado = funcionario_logado
+
+    def validar_mudanca_para_aguardando_aprovacao(self, ordem_servico: OrdemServico):
+        if ordem_servico.status == StatusOrdemServico.AGUARDANDO_APROVACAO:
+            if not ordem_servico.orcamento.servicos: # type: ignore
+                raise ValueError(
+                    'A ordem de serviço não possui serviços vinculados.'
+                )
 
     def validar_alteracao_status(
         self, novo_status: StatusOrdemServico, ordem_servico: OrdemServico
@@ -82,9 +94,11 @@ class AlterarStatusOrdemServicoUseCase:
         self, ordem_servico_id: int, status: StatusOrdemServico
     ) -> OrdemServicoOutputDTO:
         ordem_servico = self.repo.buscar_por_id(ordem_servico_id)
-
         if not ordem_servico:
             raise OrdemServicoNotFoundError
+
+        self.validar_alteracao_status(status, ordem_servico)
+        self.validar_mudanca_para_aguardando_aprovacao(ordem_servico)
 
         ordem_servico_atualizada = self.repo.alterar_status(
             ordem_servico_id, status

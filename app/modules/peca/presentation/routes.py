@@ -23,6 +23,15 @@ from app.modules.peca.application.dto import (
 router = APIRouter()
 
 
+@router.get('/tipo-peca', response_model=list[TipoPecaOutDTO])
+def listar_tipo_pecas(
+    db: Session = Depends(get_db),
+    funcionario=Depends(obter_funcionario_logado),
+):
+    use_case = ListarTipoPecasUseCase(db)
+    return use_case.execute()
+
+
 @router.post('/', response_model=PecaOutDTO, status_code=201)
 def criar_peca(
     dados: PecaInputDTO,
@@ -102,12 +111,3 @@ def consultar_tipo_peca(
 ):
     use_case = ConsultarTipoPecaUseCase(db)
     return use_case.execute(tipo_peca_id)
-
-
-@router.get('/tipo-peca', response_model=list[TipoPecaOutDTO])
-def listar_tipo_pecas(
-    db: Session = Depends(get_db),
-    funcionario=Depends(obter_funcionario_logado),
-):
-    use_case = ListarTipoPecasUseCase(db)
-    return use_case.execute()

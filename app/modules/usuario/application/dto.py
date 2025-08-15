@@ -1,8 +1,20 @@
-from pydantic import BaseModel, validator
+from pydantic import BaseModel, validator, EmailStr
+
+from enum import StrEnum
+
+
+class TipoUsuario(StrEnum):
+    ADMINISTRADOR = 'ADMINISTRADOR'
+    FUNCIONARIO = 'FUNCIONARIO'
+
+
+class TipoCliente(StrEnum):
+    PESSOA_FISICA = 'PF'
+    PESSOA_JURIDICA = 'PJ'
 
 
 class ClienteInputDTO(BaseModel):
-    email: str
+    email: EmailStr
     senha: str
     nome: str
     cpf_cnpj: str
@@ -28,7 +40,7 @@ class FuncionarioInputDTO(BaseModel):
     senha: str
     nome: str
     matricula: int
-    tipo: str = 'FUNCIONARIO'
+    tipo: str = 'ADMINISTRADOR'
 
 
 class FuncionarioOutputDTO(BaseModel):
@@ -36,7 +48,7 @@ class FuncionarioOutputDTO(BaseModel):
     email: str
     nome: str
     matricula: int
-    tipo: str = 'ADMINISTRADOR'
+    tipo: str
 
 
 class LoginInputDTO(BaseModel):

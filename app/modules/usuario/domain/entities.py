@@ -35,3 +35,7 @@ class Funcionario:
     usuario: Usuario
     matricula: int
     tipo: str  # 'ADMINISTRADOR' ou 'MECANICO'
+
+    def __post_init__(self):
+        if not self.tipo == 'ADMINISTRADOR' and not self.tipo == 'MECANICO':
+            raise ValueError('Tipo de funcionário inválido')

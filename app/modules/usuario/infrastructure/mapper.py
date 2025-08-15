@@ -89,7 +89,8 @@ class FuncionarioMapper:
         """Converte a Entidade para DTO de Saída."""
         return FuncionarioOutputDTO(
             funcionario_id=funcionario.funcionario_id,  # type: ignore
-            nome=funcionario.usuario.nome,
             email=funcionario.usuario.email,
+            nome=funcionario.usuario.nome,
             matricula=funcionario.matricula,
+            tipo=funcionario.tipo, 
         )

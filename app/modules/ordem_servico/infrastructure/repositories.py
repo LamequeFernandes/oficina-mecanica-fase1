@@ -20,6 +20,7 @@ class OrdemServicoRepository(OrdemServicoRepositoryInterface):
         self.db = db
 
     def salvar(self, ordem_servico: OrdemServico) -> OrdemServico:
+        print(ordem_servico.veiculo_id)
         ordem_servico_model = OrdemServicoMapper.entity_to_model(ordem_servico)
 
         self.db.add(ordem_servico_model)

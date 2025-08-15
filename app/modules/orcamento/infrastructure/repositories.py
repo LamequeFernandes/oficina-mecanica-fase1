@@ -21,7 +21,7 @@ class OrcamentoRepository(OrcamentoRepositoryInterface):
 
     def buscar_por_id(self, orcamento_id: int) -> Orcamento | None:
         orcamento_model = (
-            self.db.query(OrcamentoModel).filter_by(id=orcamento_id).first()
+            self.db.query(OrcamentoModel).filter_by(orcamento_id=orcamento_id).first()
         )
         return (
             OrcamentoMapper.model_to_entity(orcamento_model)

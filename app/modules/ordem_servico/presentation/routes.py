@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 from app.core.database import get_db
-from app.core.dependencies import obter_admin_logado, obter_usuario_logado
+from app.core.dependencies import obter_admin_logado, obter_usuario_logado, obter_cliente_logado
 from app.modules.ordem_servico.application.use_cases import (
     CriarOrdemServicoUseCase,
     ConsultarOrdemServicoUseCase,
@@ -34,10 +34,10 @@ def listar_todas_ordens_de_servico(
 def criar_ordem_servico(
     veiculo_id: int,
     ordem_servico_data: OrdemServicoCriacaoInputDTO,
-    administrador=Depends(obter_admin_logado),
+    cliente=Depends(obter_cliente_logado),
     db: Session = Depends(get_db),
 ):
-    use_case = CriarOrdemServicoUseCase(db)
+    use_case = CriarOrdemServicoUseCase(db, cliente)
     return use_case.execute(veiculo_id, ordem_servico_data)
 
 
@@ -80,7 +80,7 @@ def atualizar_status_ordem_servico(
     db: Session = Depends(get_db),
 ):
     use_case = AlterarStatusOrdemServicoUseCase(
-        db, administrador.funcionario_id
+        db, administrador
     )
     return use_case.execute(ordem_servico_id, ordem_servico_data.status)
 
