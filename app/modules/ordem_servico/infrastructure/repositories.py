@@ -20,7 +20,6 @@ class OrdemServicoRepository(OrdemServicoRepositoryInterface):
         self.db = db
 
     def salvar(self, ordem_servico: OrdemServico) -> OrdemServico:
-        print(ordem_servico.veiculo_id)
         ordem_servico_model = OrdemServicoMapper.entity_to_model(ordem_servico)
 
         self.db.add(ordem_servico_model)
@@ -80,7 +79,13 @@ class OrdemServicoRepository(OrdemServicoRepositoryInterface):
         ]
 
     def alterar(self, ordem_servico: OrdemServico) -> OrdemServico:
-        ordem_servico_model = OrdemServicoMapper.entity_to_model(ordem_servico)
+        ordem_servico_model = self.db.query(OrdemServicoModel).filter(
+            OrdemServicoModel.ordem_servico_id == ordem_servico.ordem_servico_id
+        ).first()
+
+        ordem_servico_model.dta_finalizacao = ordem_servico.dta_finalizacao # type: ignore
+        ordem_servico_model.status = ordem_servico.status  # type: ignore
+
         self.db.merge(ordem_servico_model)
         self.db.commit()
         self.db.refresh(ordem_servico_model)

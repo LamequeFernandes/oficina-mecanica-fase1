@@ -21,7 +21,7 @@ class OrcamentoAlteraStatusDTO(BaseModel):
 
 class OrcamentoOutputDTO(BaseModel):
     orcamento_id: int
-    status_orcamento: StatusOrcamento
+    # status_orcamento: StatusOrcamento
     valor_total_orcamento: float
     funcionario_id: int
     dta_criacao: datetime

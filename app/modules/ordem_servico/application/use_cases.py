@@ -1,4 +1,5 @@
 from sqlalchemy.orm import Session
+from datetime import datetime
 
 from app.modules.usuario.infrastructure.models import ClienteModel, UsuarioModel
 from app.modules.ordem_servico.domain.entities import OrdemServico
@@ -42,8 +43,8 @@ class AlterarStatusOrdemServicoUseCase:
         self.repo = OrdemServicoRepository(db)
         self.funcionario_logado = funcionario_logado
 
-    def validar_mudanca_para_aguardando_aprovacao(self, ordem_servico: OrdemServico):
-        if ordem_servico.status == StatusOrdemServico.AGUARDANDO_APROVACAO:
+    def validar_mudanca_para_aguardando_aprovacao(self, status_novo: StatusOrdemServico, ordem_servico: OrdemServico):
+        if status_novo == StatusOrdemServico.AGUARDANDO_APROVACAO:
             if not ordem_servico.orcamento.servicos: # type: ignore
                 raise ValueError(
                     'A ordem de serviço não possui serviços vinculados.'
@@ -98,11 +99,17 @@ class AlterarStatusOrdemServicoUseCase:
             raise OrdemServicoNotFoundError
 
         self.validar_alteracao_status(status, ordem_servico)
-        self.validar_mudanca_para_aguardando_aprovacao(ordem_servico)
+        self.validar_mudanca_para_aguardando_aprovacao(status, ordem_servico)
 
-        ordem_servico_atualizada = self.repo.alterar_status(
-            ordem_servico_id, status
-        )
+        if status == StatusOrdemServico.ENTREGUE:
+            ordem_servico.status = status.value  # type: ignore
+            ordem_servico.dta_finalizacao = datetime.now()  # type: ignore
+            ordem_servico_atualizada = self.repo.alterar(ordem_servico)
+        else:
+            ordem_servico_atualizada = self.repo.alterar_status(
+                ordem_servico_id, status
+            )
+
         if not ordem_servico_atualizada:
             raise OrdemServicoNotFoundError
         return OrdemServicoMapper.entity_to_output_dto(

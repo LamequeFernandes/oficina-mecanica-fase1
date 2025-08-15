@@ -29,7 +29,7 @@ class PecaRepository(PecaRepositoryInterface):
         return PecaMapper.model_to_entity(peca_model) if peca_model else None
 
     def alterar(self, peca: Peca) -> Peca:
-        peca_model = PecaMapper.entity_to_model(peca)
+        peca_model = self.db.query(PecaModel).filter(PecaModel.peca_id == peca.peca_id).first()
         self.db.merge(peca_model)
         self.db.commit()
         self.db.refresh(peca_model)

@@ -50,7 +50,13 @@ class ServicoRepository(ServicoRepositoryInterface):
         return False
 
     def alterar(self, servico: Servico) -> Servico:
-        servico_model = ServicoMapper.entity_to_model(servico)
+        # servico_model = ServicoMapper.entity_to_model(servico)
+        servico_model = self.db.query(ServicoModel).filter(ServicoModel.servico_id == servico.servico_id).first()
+        
+        servico_model.valor_servico = servico.valor_servico # type: ignore
+        servico_model.tipo_servico_id = servico.tipo_servico_id # type: ignore
+        servico_model.orcamento_id = servico.orcamento_id # type: ignore
+
         self.db.merge(servico_model)
         self.db.commit()
         return ServicoMapper.model_to_entity(servico_model)

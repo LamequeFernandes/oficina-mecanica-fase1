@@ -9,7 +9,6 @@ class Placa(BaseModel):
 
     @validator('valor')
     def validar_placa(cls, v):
-        print(v)
         if len(v) != 7:
             raise PadraoPlacaIncorretoError
         if bool(re.search(r'\d', v[:3])):

@@ -34,13 +34,21 @@ class OrcamentoMapper:
                 matricula=orcamento_model.funcionario.matricula,  # type: ignore
                 tipo=orcamento_model.funcionario.tipo_funcionario,  # type: ignore
             ),
+            servicos=[
+                ServicoMapper.model_to_entity(servico_model)
+                for servico_model in orcamento_model.servicos
+            ],
+            pecas=[
+                PecaMapper.model_to_entity(peca_model)
+                for peca_model in orcamento_model.pecas
+            ],
         )
 
     @staticmethod
     def entity_to_output_dto(orcamento: Orcamento) -> OrcamentoOutputDTO:
         return OrcamentoOutputDTO(
             orcamento_id=orcamento.orcamento_id,  # type: ignore
-            status_orcamento=orcamento.status_orcamento,
+            # status_orcamento=orcamento.status_orcamento,
             valor_total_orcamento=orcamento.valor_total_orcamento,  # type: ignore
             funcionario_id=orcamento.funcionario_id,
             dta_criacao=orcamento.dta_criacao,

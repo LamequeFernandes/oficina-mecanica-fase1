@@ -87,7 +87,6 @@ def atualizar_status_ordem_servico(
 
 @router.delete(
     '/veiculos/{veiculo_id}/ordens_servico/{ordem_servico_id}',
-    response_model=OrdemServicoOutputDTO,
 )
 def remover_ordem_servico(
     veiculo_id: int,

@@ -20,6 +20,6 @@ class ServicoInputDTO(BaseModel):
 
 class ServicoOutDTO(BaseModel):
     servico_id: int | None
-    tipo_servico: TipoServicoOutDTO
     valor_servico: float
     orcamento_id: int | None = None
+    tipo_servico: TipoServicoOutDTO

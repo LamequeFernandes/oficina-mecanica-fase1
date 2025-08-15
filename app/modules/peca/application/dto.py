@@ -21,7 +21,7 @@ class PecaInputDTO(BaseModel):
 
 class PecaOutDTO(BaseModel):
     peca_id: int | None
-    tipo_peca: TipoPecaOutDTO
     valor_peca: float
     marca: str
     orcamento_id: int | None
+    tipo_peca: TipoPecaOutDTO

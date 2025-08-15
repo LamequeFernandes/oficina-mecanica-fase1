@@ -48,6 +48,7 @@ class PecaMapper:
             valor_peca=peca_model.valor_peca,  # type: ignore
             marca=peca_model.marca,  # type: ignore
             orcamento_id=peca_model.orcamento_id,  # type: ignore
+            tipo_peca=TipoPecaMapper.model_to_entity(peca_model.tipo_peca),  # type: ignore
         )
 
     @staticmethod

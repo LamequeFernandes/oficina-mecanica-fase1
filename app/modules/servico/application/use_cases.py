@@ -39,6 +39,7 @@ class CriarServicoUseCase:
             servico_id=None,
             tipo_servico_id=dados.tipo_servico_id,
             valor_servico=dados.valor_servico,
+            orcamento_id=dados.orcamento_id,
         )
         try:
             servico_salvo = self.repo.salvar(servico)

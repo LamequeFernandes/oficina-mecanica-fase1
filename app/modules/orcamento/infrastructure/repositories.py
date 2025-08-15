@@ -33,7 +33,7 @@ class OrcamentoRepository(OrcamentoRepositoryInterface):
         self, orcamento_id: int, novo_status: StatusOrcamento
     ) -> Orcamento:
         orcamento_model = (
-            self.db.query(OrcamentoModel).filter_by(id=orcamento_id).first()
+            self.db.query(OrcamentoModel).filter_by(orcamento_id=orcamento_id).first()
         )
         orcamento_model.status_orcamento = novo_status  # type: ignore
         self.db.commit()
