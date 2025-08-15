@@ -25,4 +25,6 @@ class PecaModel(Base):
     )
 
     tipo_peca = relationship('TipoPecaModel')
-    orcamento = relationship('OrcamentoModel', back_populates='pecas')
+    orcamento = relationship(
+        'OrcamentoModel', back_populates='pecas', uselist=False
+    )

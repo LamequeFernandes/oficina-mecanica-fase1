@@ -2,12 +2,14 @@ from sqlalchemy.orm import Session
 from sqlalchemy.exc import IntegrityError
 
 from app.core.exceptions import (
+    ApenasMecanicoResponsavel,
     NaoEncontradoError,
     ObjetoPossuiVinculoError,
     ValorDuplicadoError,
 )
 from app.core.utils import obter_valor_e_key_duplicado_integrity_error
 
+from app.modules.orcamento.infrastructure.models import OrcamentoModel
 from app.modules.servico.application.dto import (
     ServicoInputDTO,
     ServicoOutDTO,
@@ -20,10 +22,12 @@ from app.modules.servico.infrastructure.mapper import (
 )
 
 from app.modules.servico.domain.entities import Servico, TipoServico
+from app.modules.servico.infrastructure.models import ServicoModel
 from app.modules.servico.infrastructure.repositories import (
     ServicoRepository,
     TipoServicoRepository,
 )
+from app.modules.usuario.infrastructure.models import UsuarioModel
 
 
 class CriarServicoUseCase:
@@ -81,8 +85,8 @@ class RemoverServicoUseCase:
     def verifica_se_tem_orcamento_vinculado(self, servico: Servico) -> None:
         if servico.orcamento_id:
             raise ObjetoPossuiVinculoError(
-                'Serviço', servico.servico_id, 'Orçamento' # type: ignore
-            )   
+                'Serviço', servico.servico_id, 'Orçamento'  # type: ignore
+            )
 
     def execute(self, servico_id: int) -> None:
         servico = self.repo.buscar_por_id(servico_id)
@@ -133,3 +137,76 @@ class ListarTipoServicoUseCase:
         return [
             TipoServicoMapper.entity_to_output_dto(ts) for ts in tipos_servico
         ]
+
+
+class VinculoServicoOrcamentoUseCase:
+    def __init__(self, db: Session, funcionario_logado: UsuarioModel):
+        self.db = db
+        self.repo = ServicoRepository(db)
+        self.funcionario_logado = funcionario_logado
+
+    def valida_status(self, orcamento_model: OrcamentoModel):
+        if (
+            orcamento_model.status_orcamento != 'AGUARDANDO_APROVACAO'
+        ):   # type: ignore
+            raise ValueError(
+                "Status do orçamento não permite essa ação. Tal alteração só pode ser realizada se o status por: 'AGUARDANDO APROVACAO'."
+            )
+
+    def valida_permissao(self, servico_model: ServicoModel):
+        if servico_model.orcamento_id:   # type: ignore
+            if (
+                servico_model.orcamento.funcionario_id
+                != self.funcionario_logado.funcionario_id
+            ):   # type: ignore
+                raise ApenasMecanicoResponsavel
+            if (
+                servico_model.orcamento.status_orcamento
+                != 'AGUARDANDO_APROVACAO'
+            ):   # type: ignore
+                raise ValueError(
+                    "Status do orçamento não permite essa ação. Tal alteração só pode ser realizada se o status por: 'AGUARDANDO APROVACAO'."
+                )
+
+    def execute_desvincular(self, servico_id: int) -> ServicoOutDTO:
+        servico = (
+            self.db.query(ServicoModel)
+            .filter(
+                ServicoModel.servico_id == servico_id,
+            )
+            .first()
+        )
+        if not servico:
+            raise NaoEncontradoError('Serviço', servico_id)
+        self.valida_permissao(servico)
+
+        servico = self.repo.desvincular_de_orcamento(servico_id)
+        return ServicoMapper.entity_to_output_dto(servico)
+
+    def execute_vincular(
+        self, servico_id: int, orcamento_id: int
+    ) -> ServicoOutDTO:
+        servico = (
+            self.db.query(ServicoModel)
+            .filter(
+                ServicoModel.servico_id == servico_id,
+            )
+            .first()
+        )
+        if not servico:
+            raise NaoEncontradoError('Serviço', servico_id)
+        self.valida_permissao(servico)
+
+        orcamento = (
+            self.db.query(OrcamentoModel)
+            .filter(
+                OrcamentoModel.orcamento_id == orcamento_id,
+            )
+            .first()
+        )
+        if not orcamento:
+            raise NaoEncontradoError('Orçamento', orcamento_id)
+        self.valida_status(orcamento)
+
+        servico = self.repo.vincular_a_orcamento(servico_id, orcamento_id)
+        return ServicoMapper.entity_to_output_dto(servico)

@@ -15,6 +15,14 @@ class PecaRepositoryInterface(ABC):
     def alterar(self, peca: Peca) -> Peca:
         pass
 
+    @abstractmethod
+    def vincular_a_orcamento(self, peca_id: int, orcamento_id: int) -> Peca:
+        pass
+
+    @abstractmethod
+    def desvincular_de_orcamento(self, peca_id: int) -> Peca:
+        pass
+
 
 class TipoPecaRepositoryInterface(ABC):
     @abstractmethod

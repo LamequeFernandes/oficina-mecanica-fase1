@@ -1,6 +1,13 @@
 from app.modules.usuario.domain.entities import Cliente, Funcionario, Usuario
-from app.modules.usuario.application.dto import ClienteOutputDTO, FuncionarioOutputDTO
-from app.modules.usuario.infrastructure.models import ClienteModel, FuncionarioModel, UsuarioModel
+from app.modules.usuario.application.dto import (
+    ClienteOutputDTO,
+    FuncionarioOutputDTO,
+)
+from app.modules.usuario.infrastructure.models import (
+    ClienteModel,
+    FuncionarioModel,
+    UsuarioModel,
+)
 
 
 class ClienteMapper:

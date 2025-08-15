@@ -97,8 +97,8 @@ class AlterarClienteUseCase:
             ) = obter_valor_e_key_duplicado_integrity_error(e)
             raise ValorDuplicadoError(valor_duplicado, chave)
         return ClienteMapper.entity_to_output_dto(
-            cliente_alterado # type: ignore
-        )   
+            cliente_alterado  # type: ignore
+        )
 
 
 class RemoverClienteUseCase:
@@ -240,8 +240,8 @@ class AlterarFuncionarioUseCase:
 
         funcionario_alterado = self.repo.alterar(funcionario)
         return FuncionarioMapper.entity_to_output_dto(
-            funcionario_alterado # type: ignore
-        )  
+            funcionario_alterado  # type: ignore
+        )
 
 
 class RemoverFuncionarioUseCase:

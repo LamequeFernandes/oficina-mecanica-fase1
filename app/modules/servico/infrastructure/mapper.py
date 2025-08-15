@@ -1,6 +1,12 @@
 from app.modules.servico.domain.entities import TipoServico, Servico
-from app.modules.servico.application.dto import TipoServicoOutDTO, ServicoOutDTO
-from app.modules.servico.infrastructure.models import TipoServicoModel, ServicoModel
+from app.modules.servico.application.dto import (
+    TipoServicoOutDTO,
+    ServicoOutDTO,
+)
+from app.modules.servico.infrastructure.models import (
+    TipoServicoModel,
+    ServicoModel,
+)
 
 
 class TipoServicoMapper:
@@ -34,7 +40,7 @@ class ServicoMapper:
     def entity_to_model(servico: Servico) -> ServicoModel:
         return ServicoModel(
             servico_id=servico.servico_id,
-            tipo_servico_id=servico.tipo_servico.tipo_servico_id, # type: ignore
+            tipo_servico_id=servico.tipo_servico.tipo_servico_id,  # type: ignore
             valor_servico=servico.valor_servico,
             orcamento_id=servico.orcamento_id,
         )
@@ -53,7 +59,7 @@ class ServicoMapper:
         return ServicoOutDTO(
             servico_id=servico.servico_id,
             tipo_servico=TipoServicoMapper.entity_to_output_dto(
-                servico.tipo_servico # type: ignore
+                servico.tipo_servico  # type: ignore
             ),
             valor_servico=servico.valor_servico,
             orcamento_id=servico.orcamento_id,

@@ -1,5 +1,8 @@
 from abc import ABC, abstractmethod
-from app.modules.ordem_servico.domain.entities import OrdemServico, StatusOrdemServico
+from app.modules.ordem_servico.domain.entities import (
+    OrdemServico,
+    StatusOrdemServico,
+)
 
 
 class OrdemServicoRepositoryInterface(ABC):

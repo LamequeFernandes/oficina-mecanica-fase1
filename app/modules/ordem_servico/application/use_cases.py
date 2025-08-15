@@ -8,7 +8,9 @@ from .dto import (
     StatusOrdemServico,
 )
 from app.modules.ordem_servico.infrastructure.mapper import OrdemServicoMapper
-from app.modules.ordem_servico.infrastructure.repositories import OrdemServicoRepository
+from app.modules.ordem_servico.infrastructure.repositories import (
+    OrdemServicoRepository,
+)
 from app.core.exceptions import OrdemServicoNotFoundError, StatusOSInvalido
 
 
@@ -105,8 +107,8 @@ class ConsultarOrdemServicoUseCase:
         if usuario_logado.cliente:
             if (
                 not usuario_logado.cliente.cliente_id
-                == ordem_servico.veiculo.cliente_id # type: ignore
-            ):   
+                == ordem_servico.veiculo.cliente_id  # type: ignore
+            ):
                 raise ValueError(
                     'O cliente não é o proprietário do veículo vinculado a esta ordem de serviço.'
                 )

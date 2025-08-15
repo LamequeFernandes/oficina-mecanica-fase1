@@ -1,4 +1,5 @@
 from sqlalchemy.orm import Session
+from app.core.exceptions import NaoEncontradoError
 from app.modules.peca.domain.entities import Peca, TipoPeca
 from app.modules.peca.infrastructure.mapper import PecaMapper, TipoPecaMapper
 from app.modules.peca.infrastructure.models import PecaModel, TipoPecaModel
@@ -37,6 +38,22 @@ class PecaRepository(PecaRepositoryInterface):
     def listar(self) -> list[Peca]:
         peca_models = self.db.query(PecaModel).all()
         return [PecaMapper.model_to_entity(model) for model in peca_models]
+
+    def vincular_a_orcamento(self, peca_id: int, orcamento_id: int) -> Peca:
+        peca = self.buscar_por_id(peca_id)
+        if not peca:
+            raise NaoEncontradoError('Peça', peca_id)
+        peca.orcamento_id = orcamento_id
+        self.db.commit()
+        return peca
+
+    def desvincular_de_orcamento(self, peca_id: int) -> Peca:
+        peca = self.buscar_por_id(peca_id)
+        if not peca:
+            raise NaoEncontradoError('Peça', peca_id)
+        peca.orcamento_id = None
+        self.db.commit()
+        return peca
 
 
 class TipoPecaRepository(TipoPecaRepositoryInterface):

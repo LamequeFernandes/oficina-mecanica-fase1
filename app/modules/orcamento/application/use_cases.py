@@ -17,7 +17,9 @@ from app.modules.orcamento.application.dto import (
 from app.modules.orcamento.infrastructure.mapper import OrcamentoMapper
 
 from app.modules.orcamento.domain.entities import Orcamento, StatusOrcamento
-from app.modules.orcamento.infrastructure.repositories import OrcamentoRepository
+from app.modules.orcamento.infrastructure.repositories import (
+    OrcamentoRepository,
+)
 
 
 class CriarOrcamentoUseCase:

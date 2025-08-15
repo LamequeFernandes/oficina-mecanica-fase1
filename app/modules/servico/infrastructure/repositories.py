@@ -55,6 +55,30 @@ class ServicoRepository(ServicoRepositoryInterface):
         self.db.commit()
         return ServicoMapper.model_to_entity(servico_model)
 
+    def vincular_a_orcamento(
+        self, servico_id: int, orcamento_id: int
+    ) -> Servico:
+        servico_model = (
+            self.db.query(ServicoModel)
+            .filter(ServicoModel.servico_id == servico_id)
+            .first()
+        )
+        servico_model.orcamento_id = orcamento_id   # type: ignore
+        self.db.commit()
+        self.db.refresh(servico_model)
+        return ServicoMapper.model_to_entity(servico_model)
+
+    def desvincular_de_orcamento(self, servico_id: int) -> Servico:
+        servico_model = (
+            self.db.query(ServicoModel)
+            .filter(ServicoModel.servico_id == servico_id)
+            .first()
+        )
+        servico_model.orcamento_id = None   # type: ignore
+        self.db.commit()
+        self.db.refresh(servico_model)
+        return ServicoMapper.model_to_entity(servico_model)
+
 
 class TipoServicoRepository(TipoServicoRepositoryInterface):
     def __init__(self, db: Session):

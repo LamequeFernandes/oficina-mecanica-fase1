@@ -8,7 +8,10 @@ from app.modules.veiculo.application.use_cases import (
     AlterarVeiculoUseCase,
     RemoverVeiculoUseCase,
 )
-from app.modules.veiculo.application.dto import VeiculoInputDTO, VeiculoOutputDTO
+from app.modules.veiculo.application.dto import (
+    VeiculoInputDTO,
+    VeiculoOutputDTO,
+)
 
 
 router = APIRouter()

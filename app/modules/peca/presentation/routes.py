@@ -10,6 +10,7 @@ from app.modules.peca.application.use_cases import (
     CriarTipoPecaUseCase,
     ConsultarTipoPecaUseCase,
     ListarTipoPecasUseCase,
+    VinculoPecaOrcamentoUseCase,
 )
 from app.modules.peca.application.dto import (
     TipoPecaInputDTO,
@@ -60,6 +61,27 @@ def listar_pecas(
 ):
     use_case = ListarPecasUseCase(db)
     return use_case.execute()
+
+
+@router.patch('/{peca_id}/desvincular', response_model=PecaOutDTO)
+def desvincular_peca(
+    peca_id: int,
+    db: Session = Depends(get_db),
+    funcionario=Depends(obter_funcionario_logado),
+):
+    use_case = VinculoPecaOrcamentoUseCase(db, funcionario)
+    return use_case.execute_desvincular(peca_id)
+
+
+@router.patch('/{peca_id}/vincular/{orcamento_id}', response_model=PecaOutDTO)
+def vincular_peca(
+    peca_id: int,
+    orcamento_id: int,
+    db: Session = Depends(get_db),
+    funcionario=Depends(obter_funcionario_logado),
+):
+    use_case = VinculoPecaOrcamentoUseCase(db, funcionario)
+    return use_case.execute_vincular(peca_id, orcamento_id)
 
 
 @router.post('/tipo-peca', response_model=TipoPecaOutDTO, status_code=201)

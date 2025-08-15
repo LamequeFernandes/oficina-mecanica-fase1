@@ -19,6 +19,16 @@ class ServicoRepositoryInterface(ABC):
     def alterar(self, servico: Servico) -> Servico:
         pass
 
+    @abstractmethod
+    def vincular_a_orcamento(
+        self, servico_id: int, orcamento_id: int
+    ) -> Servico:
+        pass
+
+    @abstractmethod
+    def desvincular_de_orcamento(self, servico_id: int) -> Servico:
+        pass
+
 
 class TipoServicoRepositoryInterface(ABC):
     @abstractmethod

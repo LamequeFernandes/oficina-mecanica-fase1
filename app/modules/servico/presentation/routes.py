@@ -10,6 +10,7 @@ from app.modules.servico.application.use_cases import (
     CriarTipoServicoUseCase,
     ConsultarTipoServicoUseCase,
     ListarTipoServicoUseCase,
+    VinculoServicoOrcamentoUseCase,
 )
 from app.modules.servico.application.dto import (
     TipoServicoInputDTO,
@@ -51,6 +52,29 @@ def alterar_servico(
 ):
     use_case = AlterarServicoUseCase(db)
     return use_case.execute(servico_id, dados)
+
+
+@router.patch('/{servico_id}/desvincular', response_model=ServicoOutDTO)
+def desvincular_servico(
+    servico_id: int,
+    db: Session = Depends(get_db),
+    funcionario=Depends(obter_funcionario_logado),
+):
+    use_case = VinculoServicoOrcamentoUseCase(db, funcionario)
+    return use_case.execute_desvincular(servico_id)
+
+
+@router.patch(
+    '/{servico_id}/vincular/{orcamento_id}', response_model=ServicoOutDTO
+)
+def vincular_servico(
+    servico_id: int,
+    orcamento_id: int,
+    db: Session = Depends(get_db),
+    funcionario=Depends(obter_funcionario_logado),
+):
+    use_case = VinculoServicoOrcamentoUseCase(db, funcionario)
+    return use_case.execute_vincular(servico_id, orcamento_id)
 
 
 @router.delete('/{servico_id}', response_model=None, status_code=204)

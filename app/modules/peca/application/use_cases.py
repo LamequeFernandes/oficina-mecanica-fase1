@@ -1,8 +1,13 @@
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import IntegrityError
-from app.core.exceptions import NaoEncontradoError, ValorDuplicadoError
+from app.core.exceptions import (
+    ApenasMecanicoResponsavel,
+    NaoEncontradoError,
+    ValorDuplicadoError,
+)
 from app.core.utils import obter_valor_e_key_duplicado_integrity_error
 
+from app.modules.orcamento.infrastructure.models import OrcamentoModel
 from app.modules.peca.application.dto import (
     PecaInputDTO,
     PecaOutDTO,
@@ -12,7 +17,12 @@ from app.modules.peca.application.dto import (
 from app.modules.peca.infrastructure.mapper import PecaMapper, TipoPecaMapper
 
 from app.modules.peca.domain.entities import Peca, TipoPeca
-from app.modules.peca.infrastructure.repositories import PecaRepository, TipoPecaRepository
+from app.modules.peca.infrastructure.models import PecaModel
+from app.modules.peca.infrastructure.repositories import (
+    PecaRepository,
+    TipoPecaRepository,
+)
+from app.modules.usuario.infrastructure.models import UsuarioModel
 
 
 class CriarPecaUseCase:
@@ -118,3 +128,73 @@ class ListarTipoPecasUseCase:
             TipoPecaMapper.entity_to_output_dto(tipo_peca)
             for tipo_peca in tipo_pecas
         ]
+
+
+class VinculoPecaOrcamentoUseCase:
+    def __init__(self, db: Session, funcionario_logado: UsuarioModel):
+        self.db = db
+        self.repo = PecaRepository(db)
+        self.funcionario_logado = funcionario_logado
+
+    def valida_status(self, orcamento_model: OrcamentoModel):
+        if (
+            orcamento_model.status_orcamento != 'AGUARDANDO_APROVACAO'
+        ):   # type: ignore
+            raise ValueError(
+                "Status do orçamento não permite essa ação. Tal alteração só pode ser realizada se o status por: 'AGUARDANDO APROVACAO'."
+            )
+
+    def valida_permissao(self, peca_model: PecaModel):
+        if peca_model.orcamento_id:   # type: ignore
+            if (
+                peca_model.orcamento.funcionario_id
+                != self.funcionario_logado.funcionario_id
+            ):   # type: ignore
+                raise ApenasMecanicoResponsavel
+            if (
+                peca_model.orcamento.status_orcamento != 'AGUARDANDO_APROVACAO'
+            ):   # type: ignore
+                raise ValueError(
+                    "Status do orçamento não permite essa ação. Tal alteração só pode ser realizada se o status por: 'AGUARDANDO APROVACAO'."
+                )
+
+    def execute_desvincular(self, peca_id: int) -> PecaOutDTO:
+        peca = (
+            self.db.query(PecaModel)
+            .filter(
+                PecaModel.peca_id == peca_id,
+            )
+            .first()
+        )
+        if not peca:
+            raise NaoEncontradoError('Peça', peca_id)
+        self.valida_permissao(peca)
+
+        peca = self.repo.desvincular_de_orcamento(peca_id)
+        return PecaMapper.entity_to_output_dto(peca)
+
+    def execute_vincular(self, peca_id: int, orcamento_id: int) -> PecaOutDTO:
+        peca = (
+            self.db.query(PecaModel)
+            .filter(
+                PecaModel.peca_id == peca_id,
+            )
+            .first()
+        )
+        if not peca:
+            raise NaoEncontradoError('Peça', peca_id)
+        self.valida_permissao(peca)
+
+        orcamento = (
+            self.db.query(OrcamentoModel)
+            .filter(
+                OrcamentoModel.orcamento_id == orcamento_id,
+            )
+            .first()
+        )
+        if not orcamento:
+            raise NaoEncontradoError('Orçamento', orcamento_id)
+        self.valida_status(orcamento)
+
+        peca = self.repo.vincular_a_orcamento(peca_id, orcamento_id)
+        return PecaMapper.entity_to_output_dto(peca)
