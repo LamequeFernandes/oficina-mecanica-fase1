@@ -1,6 +1,6 @@
-from ..domain.entities import Cliente, Funcionario, Usuario
-from ..application.dto import ClienteOutputDTO, FuncionarioOutputDTO
-from .models import ClienteModel, FuncionarioModel, UsuarioModel
+from app.modules.usuario.domain.entities import Cliente, Funcionario, Usuario
+from app.modules.usuario.application.dto import ClienteOutputDTO, FuncionarioOutputDTO
+from app.modules.usuario.infrastructure.models import ClienteModel, FuncionarioModel, UsuarioModel
 
 
 class ClienteMapper:
@@ -15,34 +15,34 @@ class ClienteMapper:
                 usuario_id=cliente.usuario.usuario_id,
                 email=cliente.usuario.email,
                 senha=cliente.usuario.senha,
-                nome=cliente.usuario.nome
-            )
+                nome=cliente.usuario.nome,
+            ),
         )
 
     @staticmethod
     def model_to_entity(cliente: ClienteModel) -> Cliente:
         """Converte o Modelo ORM para Entidade."""
         return Cliente(
-            cliente_id=cliente.cliente_id, # type: ignore
-            cpf_cnpj=cliente.cpf_cnpj, # type: ignore
-            tipo=cliente.tipo_cliente, # type: ignore
+            cliente_id=cliente.cliente_id,  # type: ignore
+            cpf_cnpj=cliente.cpf_cnpj,  # type: ignore
+            tipo=cliente.tipo_cliente,  # type: ignore
             usuario=Usuario(
                 usuario_id=cliente.usuario.usuario_id,
                 email=cliente.usuario.email,
                 senha=cliente.usuario.senha,
-                nome=cliente.usuario.nome
-            )
+                nome=cliente.usuario.nome,
+            ),
         )
 
     @staticmethod
     def entity_to_output_dto(cliente: Cliente) -> ClienteOutputDTO:
         """Converte a Entidade para DTO de Saída."""
         return ClienteOutputDTO(
-            cliente_id=cliente.cliente_id, # type: ignore
+            cliente_id=cliente.cliente_id,  # type: ignore
             nome=cliente.usuario.nome,
             email=cliente.usuario.email,
             cpf_cnpj=cliente.cpf_cnpj,
-            tipo=cliente.tipo
+            tipo=cliente.tipo,
         )
 
 
@@ -58,30 +58,30 @@ class FuncionarioMapper:
                 usuario_id=funcionario.usuario.usuario_id,
                 email=funcionario.usuario.email,
                 senha=funcionario.usuario.senha,
-                nome=funcionario.usuario.nome
-            )
+                nome=funcionario.usuario.nome,
+            ),
         )
 
     @staticmethod
     def model_to_entity(funcionario: FuncionarioModel) -> Funcionario:
         """Converte o Modelo ORM para Entidade."""
         return Funcionario(
-            funcionario_id=funcionario.funcionario_id, # type: ignore
-            matricula=funcionario.matricula, # type: ignore
-            tipo=funcionario.tipo_funcionario, # type: ignore
+            funcionario_id=funcionario.funcionario_id,  # type: ignore
+            matricula=funcionario.matricula,  # type: ignore
+            tipo=funcionario.tipo_funcionario,  # type: ignore
             usuario=Usuario(
                 usuario_id=funcionario.usuario.usuario_id,
                 email=funcionario.usuario.email,
                 senha=funcionario.usuario.senha,
-                nome=funcionario.usuario.nome
-            )
+                nome=funcionario.usuario.nome,
+            ),
         )
 
     @staticmethod
     def entity_to_output_dto(funcionario: Funcionario) -> FuncionarioOutputDTO:
         """Converte a Entidade para DTO de Saída."""
         return FuncionarioOutputDTO(
-            funcionario_id=funcionario.funcionario_id, # type: ignore
+            funcionario_id=funcionario.funcionario_id,  # type: ignore
             nome=funcionario.usuario.nome,
             email=funcionario.usuario.email,
             matricula=funcionario.matricula,

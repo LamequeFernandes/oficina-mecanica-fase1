@@ -10,15 +10,23 @@ class OrcamentoModel(Base):
     orcamento_id = Column(Integer, primary_key=True, autoincrement=True)
     status_orcamento = Column(
         Enum('AGUARDANDO_APROVACAO', 'APROVADO', name='status_orcamento'),
-        nullable=False
+        nullable=False,
     )
-    ordem_servico_id = Column(Integer, ForeignKey('ordem_servico.ordem_servico_id'), nullable=False)
+    ordem_servico_id = Column(
+        Integer, ForeignKey('ordem_servico.ordem_servico_id'), nullable=False
+    )
     dta_criacao = Column(DateTime, default=datetime.now)
     dta_cancelamento = Column(DateTime, nullable=True)
-    funcionario_id = Column(Integer, ForeignKey('funcionario.funcionario_id'), nullable=False)
+    funcionario_id = Column(
+        Integer, ForeignKey('funcionario.funcionario_id'), nullable=False
+    )
 
     # Relacionamentos
-    ordem_servico = relationship("OrdemServicoModel", back_populates="orcamento", uselist=False)
-    funcionario = relationship("FuncionarioModel", back_populates="orcamentos", uselist=False)
-    servicos = relationship("ServicoModel", back_populates="orcamento")
-    pecas = relationship("PecaModel", back_populates="orcamento")
+    ordem_servico = relationship(
+        'OrdemServicoModel', back_populates='orcamento', uselist=False
+    )
+    funcionario = relationship(
+        'FuncionarioModel', back_populates='orcamentos', uselist=False
+    )
+    servicos = relationship('ServicoModel', back_populates='orcamento')
+    pecas = relationship('PecaModel', back_populates='orcamento')

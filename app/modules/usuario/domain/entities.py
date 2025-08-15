@@ -12,6 +12,7 @@ class Usuario:
     nome: str
     dta_cadastro: datetime = datetime.now()
 
+
 @dataclass
 class Cliente:
     cliente_id: int | None
@@ -25,7 +26,8 @@ class Cliente:
         elif self.tipo == 'PJ':
             CNPJ(valor=self.cpf_cnpj)
         else:
-            raise ValueError("Tipo de cliente inválido")
+            raise ValueError('Tipo de cliente inválido')
+
 
 @dataclass
 class Funcionario:

@@ -22,4 +22,3 @@ class VeiculoRepositoryInterface(ABC):
     @abstractmethod
     def remover(self, veiculo_id: int) -> None:
         pass
-    

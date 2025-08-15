@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from ..domain.entities import Cliente, Funcionario
+from app.modules.usuario.domain.entities import Cliente, Funcionario
 
 
 class ClienteRepositoryInterface(ABC):
@@ -14,7 +14,7 @@ class ClienteRepositoryInterface(ABC):
     @abstractmethod
     def buscar_por_id(self, id: int) -> Cliente | None:
         pass
-    
+
     @abstractmethod
     def alterar(self, cliente: Cliente) -> Cliente | None:
         pass
@@ -31,7 +31,7 @@ class FuncionarioRepositoryInterface(ABC):
 
     @abstractmethod
     def buscar_por_matricula(self, matricula: int) -> Funcionario | None:
-        pass 
+        pass
 
     @abstractmethod
     def buscar_por_id(self, id: int) -> Funcionario | None:

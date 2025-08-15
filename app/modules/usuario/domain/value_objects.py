@@ -1,6 +1,9 @@
 from pydantic import BaseModel, validator
 
-from app.core.exceptions import TamanhoCNPJInvalidoError, TamanhoCPFInvalidoError
+from app.core.exceptions import (
+    TamanhoCNPJInvalidoError,
+    TamanhoCPFInvalidoError,
+)
 
 
 class CPF(BaseModel):

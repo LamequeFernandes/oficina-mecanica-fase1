@@ -1,8 +1,17 @@
 from sqlalchemy.orm import Session
 from app.modules.servico.domain.entities import Servico, TipoServico
-from app.modules.servico.infrastructure.mapper import ServicoMapper, TipoServicoMapper
-from app.modules.servico.infrastructure.models import ServicoModel, TipoServicoModel
-from app.modules.servico.application.interfaces import ServicoRepositoryInterface, TipoServicoRepositoryInterface
+from app.modules.servico.infrastructure.mapper import (
+    ServicoMapper,
+    TipoServicoMapper,
+)
+from app.modules.servico.infrastructure.models import (
+    ServicoModel,
+    TipoServicoModel,
+)
+from app.modules.servico.application.interfaces import (
+    ServicoRepositoryInterface,
+    TipoServicoRepositoryInterface,
+)
 
 
 class ServicoRepository(ServicoRepositoryInterface):
@@ -17,11 +26,23 @@ class ServicoRepository(ServicoRepositoryInterface):
         return ServicoMapper.model_to_entity(servico_model)
 
     def buscar_por_id(self, servico_id: int) -> Servico | None:
-        servico_model = self.db.query(ServicoModel).filter(ServicoModel.servico_id == servico_id).first()
-        return ServicoMapper.model_to_entity(servico_model) if servico_model else None
+        servico_model = (
+            self.db.query(ServicoModel)
+            .filter(ServicoModel.servico_id == servico_id)
+            .first()
+        )
+        return (
+            ServicoMapper.model_to_entity(servico_model)
+            if servico_model
+            else None
+        )
 
     def remover(self, servico_id: int) -> bool:
-        servico_model = self.db.query(ServicoModel).filter(ServicoModel.servico_id == servico_id).first()
+        servico_model = (
+            self.db.query(ServicoModel)
+            .filter(ServicoModel.servico_id == servico_id)
+            .first()
+        )
         if servico_model:
             self.db.delete(servico_model)
             self.db.commit()
@@ -47,9 +68,20 @@ class TipoServicoRepository(TipoServicoRepositoryInterface):
         return TipoServicoMapper.model_to_entity(tipo_servico_model)
 
     def buscar_por_id(self, tipo_servico_id: int) -> TipoServico | None:
-        tipo_servico_model = self.db.query(TipoServicoModel).filter(TipoServicoModel.tipo_servico_id == tipo_servico_id).first()
-        return TipoServicoMapper.model_to_entity(tipo_servico_model) if tipo_servico_model else None
+        tipo_servico_model = (
+            self.db.query(TipoServicoModel)
+            .filter(TipoServicoModel.tipo_servico_id == tipo_servico_id)
+            .first()
+        )
+        return (
+            TipoServicoMapper.model_to_entity(tipo_servico_model)
+            if tipo_servico_model
+            else None
+        )
 
     def listar(self) -> list[TipoServico]:
         tipo_servico_models = self.db.query(TipoServicoModel).all()
-        return [TipoServicoMapper.model_to_entity(model) for model in tipo_servico_models]
+        return [
+            TipoServicoMapper.model_to_entity(model)
+            for model in tipo_servico_models
+        ]

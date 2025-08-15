@@ -15,9 +15,13 @@ class ServicoModel(Base):
     __tablename__ = 'servico'
 
     servico_id = Column(Integer, primary_key=True, autoincrement=True)
-    tipo_servico_id = Column(Integer, ForeignKey('tipo_servico.tipo_servico_id'), nullable=False)
+    tipo_servico_id = Column(
+        Integer, ForeignKey('tipo_servico.tipo_servico_id'), nullable=False
+    )
     valor_servico = Column(Numeric(8, 2), nullable=False)
-    orcamento_id = Column(Integer, ForeignKey('orcamento.orcamento_id'), nullable=False)
+    orcamento_id = Column(
+        Integer, ForeignKey('orcamento.orcamento_id'), nullable=False
+    )
 
-    tipo_servico = relationship("TipoServicoModel")
-    orcamento = relationship("OrcamentoModel", back_populates="servicos")
+    tipo_servico = relationship('TipoServicoModel')
+    orcamento = relationship('OrcamentoModel', back_populates='servicos')

@@ -25,4 +25,3 @@ class PecaOutDTO(BaseModel):
     valor_peca: float
     marca: str
     orcamento_id: int | None
-

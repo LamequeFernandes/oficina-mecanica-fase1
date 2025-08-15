@@ -16,10 +16,11 @@ class OrcamentoRepositoryInterface(ABC):
     #     pass
 
     @abstractmethod
-    def alterar_status(self, orcamento_id: int, novo_status: StatusOrcamento) -> Orcamento:
+    def alterar_status(
+        self, orcamento_id: int, novo_status: StatusOrcamento
+    ) -> Orcamento:
         pass
 
     @abstractmethod
     def remover(self, orcamento_id: int) -> None:
         pass
-    

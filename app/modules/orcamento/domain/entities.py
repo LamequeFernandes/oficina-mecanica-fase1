@@ -4,12 +4,12 @@ from datetime import datetime
 
 from app.modules.peca.domain.entities import Peca
 from app.modules.servico.domain.entities import Servico
-from ...usuario.domain.entities import Funcionario
+from app.modules.usuario.domain.entities import Funcionario
 
 
 class StatusOrcamento(StrEnum):
-    AGUARDANDO_APROVACAO = "AGUARDANDO_APROVACAO"
-    APROVADO = "APROVADO"
+    AGUARDANDO_APROVACAO = 'AGUARDANDO_APROVACAO'
+    APROVADO = 'APROVADO'
 
 
 @dataclass
@@ -18,7 +18,7 @@ class Orcamento:
     funcionario_id: int
     status_orcamento: StatusOrcamento
     ordem_servico_id: int
-    funcionario: Funcionario | None = None # VER DPS SE PODE SER NULO TODO
+    funcionario: Funcionario | None = None   # VER DPS SE PODE SER NULO TODO
     valor_total_orcamento: float | None = None
     dta_criacao: datetime = datetime.now()
     dta_cancelamento: datetime | None = None
@@ -30,7 +30,5 @@ class Orcamento:
         soma_valor_servico = sum(
             servico.valor_servico for servico in self.servicos
         )
-        soma_valor_peca = sum(
-            peca.valor_peca for peca in self.pecas
-        )
+        soma_valor_peca = sum(peca.valor_peca for peca in self.pecas)
         self.valor_total_orcamento = soma_valor_servico + soma_valor_peca

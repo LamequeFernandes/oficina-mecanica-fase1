@@ -4,7 +4,7 @@ from pydantic import BaseModel
 from app.modules.orcamento.application.dto import OrcamentoOutputDTO
 from app.modules.veiculo.application.dto import VeiculoOutputDTO
 
-from ..domain.entities import StatusOrdemServico
+from app.modules.ordem_servico.domain.entities import StatusOrdemServico
 
 
 class OrdemServicoOutputDTO(BaseModel):
@@ -24,4 +24,3 @@ class OrdemServicoCriacaoInputDTO(BaseModel):
 
 class OrdemServicoAlteracaoStatusInputDTO(BaseModel):
     status: StatusOrdemServico
-

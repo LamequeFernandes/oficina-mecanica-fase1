@@ -15,4 +15,3 @@ class Servico:
     valor_servico: float
     orcamento_id: int | None = None
     tipo_servico: TipoServico | None = None
-

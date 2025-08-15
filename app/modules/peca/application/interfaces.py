@@ -28,4 +28,3 @@ class TipoPecaRepositoryInterface(ABC):
     @abstractmethod
     def listar(self) -> list[TipoPeca]:
         pass
-

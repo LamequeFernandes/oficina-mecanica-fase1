@@ -15,10 +15,14 @@ class PecaModel(Base):
     __tablename__ = 'peca'
 
     peca_id = Column(Integer, primary_key=True, autoincrement=True)
-    tipo_peca_id = Column(Integer, ForeignKey('tipo_peca.tipo_peca_id'), nullable=False)
+    tipo_peca_id = Column(
+        Integer, ForeignKey('tipo_peca.tipo_peca_id'), nullable=False
+    )
     valor_peca = Column(Numeric(8, 2), nullable=False)
     marca = Column(String(255), nullable=False)
-    orcamento_id = Column(Integer, ForeignKey('orcamento.orcamento_id'), nullable=True)
+    orcamento_id = Column(
+        Integer, ForeignKey('orcamento.orcamento_id'), nullable=True
+    )
 
-    tipo_peca = relationship("TipoPecaModel")
-    orcamento = relationship("OrcamentoModel", back_populates="pecas")
+    tipo_peca = relationship('TipoPecaModel')
+    orcamento = relationship('OrcamentoModel', back_populates='pecas')

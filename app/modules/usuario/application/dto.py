@@ -41,7 +41,7 @@ class FuncionarioOutputDTO(BaseModel):
 
 class LoginInputDTO(BaseModel):
     username: str
-    password: str  
+    password: str
 
 
 class LoginOutputDTO(BaseModel):

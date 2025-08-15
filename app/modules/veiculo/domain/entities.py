@@ -15,4 +15,4 @@ class Veiculo:
 
     def __post_init__(self):
         self.placa = self.placa.upper()
-        Placa(valor=self.placa) # valida placa
+        Placa(valor=self.placa)   # valida placa

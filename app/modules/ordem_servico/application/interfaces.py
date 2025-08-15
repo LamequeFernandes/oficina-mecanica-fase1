@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from ..domain.entities import OrdemServico, StatusOrdemServico
+from app.modules.ordem_servico.domain.entities import OrdemServico, StatusOrdemServico
 
 
 class OrdemServicoRepositoryInterface(ABC):
@@ -28,7 +28,9 @@ class OrdemServicoRepositoryInterface(ABC):
         pass
 
     @abstractmethod
-    def alterar_status(self, ordem_servico_id: int, status: StatusOrdemServico) -> OrdemServico:
+    def alterar_status(
+        self, ordem_servico_id: int, status: StatusOrdemServico
+    ) -> OrdemServico:
         pass
 
     @abstractmethod

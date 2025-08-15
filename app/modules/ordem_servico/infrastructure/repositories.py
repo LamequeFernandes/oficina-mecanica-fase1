@@ -1,9 +1,16 @@
 from sqlalchemy.orm import Session
-from app.modules.ordem_servico.application.dto import OrdemServicoCriacaoInputDTO
-from app.modules.ordem_servico.domain.entities import OrdemServico, StatusOrdemServico
+from app.modules.ordem_servico.application.dto import (
+    OrdemServicoCriacaoInputDTO,
+)
+from app.modules.ordem_servico.domain.entities import (
+    OrdemServico,
+    StatusOrdemServico,
+)
 from app.modules.veiculo.domain.entities import Veiculo
 from app.modules.ordem_servico.infrastructure.models import OrdemServicoModel
-from app.modules.ordem_servico.application.interfaces import OrdemServicoRepositoryInterface
+from app.modules.ordem_servico.application.interfaces import (
+    OrdemServicoRepositoryInterface,
+)
 from app.modules.ordem_servico.infrastructure.mapper import OrdemServicoMapper
 from app.modules.veiculo.infrastructure.models import VeiculoModel
 
@@ -22,18 +29,22 @@ class OrdemServicoRepository(OrdemServicoRepositoryInterface):
         return OrdemServicoMapper.model_to_entity(ordem_servico_model)
 
     def buscar_por_id(self, ordem_servico_id: int) -> OrdemServico | None:
-        ordem_servico = self.db.query(OrdemServicoModel).filter(
-            OrdemServicoModel.ordem_servico_id == ordem_servico_id
-        ).first()
+        ordem_servico = (
+            self.db.query(OrdemServicoModel)
+            .filter(OrdemServicoModel.ordem_servico_id == ordem_servico_id)
+            .first()
+        )
 
         if not ordem_servico:
             return None
         return OrdemServicoMapper.model_to_entity(ordem_servico)
 
     def buscar_por_veiculo(self, veiculo_id: int) -> list[OrdemServico]:
-        ordens_servico = self.db.query(OrdemServicoModel).filter(
-            OrdemServicoModel.veiculo_id == veiculo_id
-        ).all()
+        ordens_servico = (
+            self.db.query(OrdemServicoModel)
+            .filter(OrdemServicoModel.veiculo_id == veiculo_id)
+            .all()
+        )
 
         if not ordens_servico:
             return []
@@ -43,9 +54,15 @@ class OrdemServicoRepository(OrdemServicoRepositoryInterface):
         ]
 
     def buscar_por_cliente(self, cliente_id: int) -> list[OrdemServico]:
-        ordens_servico = self.db.query(OrdemServicoModel).join(VeiculoModel, OrdemServicoModel.veiculo_id == VeiculoModel.veiculo_id).filter(
-            VeiculoModel.cliente_id == cliente_id
-        ).all()
+        ordens_servico = (
+            self.db.query(OrdemServicoModel)
+            .join(
+                VeiculoModel,
+                OrdemServicoModel.veiculo_id == VeiculoModel.veiculo_id,
+            )
+            .filter(VeiculoModel.cliente_id == cliente_id)
+            .all()
+        )
 
         if not ordens_servico:
             return []
@@ -60,7 +77,7 @@ class OrdemServicoRepository(OrdemServicoRepositoryInterface):
             OrdemServicoMapper.model_to_entity(ordem_servico)
             for ordem_servico in ordens_servico
         ]
-    
+
     def alterar(self, ordem_servico: OrdemServico) -> OrdemServico:
         ordem_servico_model = OrdemServicoMapper.entity_to_model(ordem_servico)
         self.db.merge(ordem_servico_model)
@@ -71,7 +88,11 @@ class OrdemServicoRepository(OrdemServicoRepositoryInterface):
     def alterar_status(
         self, ordem_servico_id: int, status: StatusOrdemServico
     ) -> OrdemServico:
-        ordem_servico = self.db.query(OrdemServicoModel).filter(OrdemServicoModel.ordem_servico_id==ordem_servico_id).first()
+        ordem_servico = (
+            self.db.query(OrdemServicoModel)
+            .filter(OrdemServicoModel.ordem_servico_id == ordem_servico_id)
+            .first()
+        )
 
         ordem_servico.status = status.value  # type: ignore
         self.db.commit()
@@ -80,6 +101,10 @@ class OrdemServicoRepository(OrdemServicoRepositoryInterface):
         return OrdemServicoMapper.model_to_entity(ordem_servico)
 
     def remover(self, ordem_servico_id: int) -> None:
-        ordem_servico = self.db.query(OrdemServicoModel).filter(OrdemServicoModel.ordem_servico_id==ordem_servico_id).first()
+        ordem_servico = (
+            self.db.query(OrdemServicoModel)
+            .filter(OrdemServicoModel.ordem_servico_id == ordem_servico_id)
+            .first()
+        )
         self.db.delete(ordem_servico)
         self.db.commit()
