@@ -12,6 +12,14 @@ services:
     volumes:
       - mysql-volume:/var/lib/mysql
       - ./scripts:/docker-entrypoint-initdb.d
+  api:
+    build: .
+    container_name: my-fastapi-fase1
+    restart: always
+    ports:
+      - '8000:8000'
+    depends_on:
+      - db
 
 volumes:
   mysql-volume:
