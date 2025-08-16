@@ -1,5 +1,17 @@
 # 12SOAT - Fase 1 - Tech Challenge
 
+## Identificação
+
+Aluno: Lameque Fernandes Azevedo
+Registro FIAP: RM366058
+
+Turma 12SOAT - Software Architecure
+Grupo Individual
+Grupo 113
+
+Email: lamequesao@gmail.com
+Discord: lamequesao
+
 ## Descrição
 Este projeto é uma API RESTful desenvolvida com FastAPI em Python 3.12, integrada a um banco de dados MySQL. O objetivo principal é fornecer uma aplicação backend para gerenciamento de uma oficina (fase 1), permitindo operações CRUD em entidades relacionadas a veículos, clientes, serviços, peças, orçamentos, ordens de serviço e usuários (incluindo clientes e funcionários). A aplicação segue uma arquitetura limpa (Clean Architecture), com separação em camadas: presentation (rotas), application (use cases e DTOs), domain (entidades e value objects) e infrastructure (repositórios, mappers e models). O projeto é conteinerizado usando Docker Compose.
 
