@@ -152,14 +152,6 @@ class ConsultarClienteUseCase:
 
         return ClienteMapper.entity_to_output_dto(cliente)
 
-    def executar_consulta_por_cpf_cnpj(
-        self, cpf_cnpj: str
-    ) -> ClienteOutputDTO:
-        cliente = self.repo.buscar_por_cpf_cnpj(cpf_cnpj)
-        if not cliente:
-            raise ClienteNotFoundError
-        return ClienteMapper.entity_to_output_dto(cliente)
-
 
 class CriarFuncionarioUseCase:
     def __init__(self, db: Session):
@@ -194,14 +186,6 @@ class ConsultarFuncionarioUseCase:
         funcionario = self.repo.buscar_por_id(funcionario_id)
         if not funcionario:
             raise FuncionarioNotFoundError(funcionario_id)
-        return FuncionarioMapper.entity_to_output_dto(funcionario)
-
-    def executar_consulta_por_matricula(
-        self, matricula: int
-    ) -> FuncionarioOutputDTO:
-        funcionario = self.repo.buscar_por_matricula(matricula)
-        if not funcionario:
-            raise FuncionarioNotFoundError(matricula)
         return FuncionarioMapper.entity_to_output_dto(funcionario)
 
 

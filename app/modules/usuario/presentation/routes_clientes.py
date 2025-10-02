@@ -39,17 +39,6 @@ def consultar_cliente(
     return use_case.executar_consulta_por_id(cliente_id)
 
 
-# TODO: AJUSTAR ENDPOINT
-@router.get('/cpfcnpj/{cpf_cnpj}', response_model=ClienteOutputDTO)
-def consultar_cliente_por_cpf_cnpj(
-    cpf_cnpj: str,
-    usuario_id=Depends(obter_id_usuario_logado),
-    db: Session = Depends(get_db),
-):
-    use_case = ConsultarClienteUseCase(db)
-    return use_case.executar_consulta_por_cpf_cnpj(cpf_cnpj)
-
-
 @router.put('/{cliente_id}', response_model=ClienteOutputDTO)
 def alterar_cliente(
     cliente_id: int,

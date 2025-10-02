@@ -41,16 +41,6 @@ class ClienteRepository(ClienteRepositoryInterface):
         self.db.refresh(cliente_model)
         return ClienteMapper.model_to_entity(cliente_model)
 
-    def buscar_por_cpf_cnpj(self, cpf: str):
-        cliente_model = (
-            self.db.query(ClienteModel)
-            .filter(ClienteModel.cpf_cnpj == cpf)
-            .first()
-        )
-        if not cliente_model:
-            return None
-        return ClienteMapper.model_to_entity(cliente_model)
-
     def buscar_por_id(self, id: int) -> Cliente | None:
         cliente_model = (
             self.db.query(ClienteModel)
@@ -121,16 +111,6 @@ class FuncionarioRepository(FuncionarioRepositoryInterface):
         self.db.add(funcionario_model)
         self.db.commit()
         self.db.refresh(funcionario_model)
-        return FuncionarioMapper.model_to_entity(funcionario_model)
-
-    def buscar_por_matricula(self, matricula: int):
-        funcionario_model = (
-            self.db.query(FuncionarioModel)
-            .filter(FuncionarioModel.matricula == matricula)
-            .first()
-        )
-        if not funcionario_model:
-            return None
         return FuncionarioMapper.model_to_entity(funcionario_model)
 
     def buscar_por_id(self, id: int) -> Funcionario | None:

@@ -8,10 +8,6 @@ class ClienteRepositoryInterface(ABC):
         pass
 
     @abstractmethod
-    def buscar_por_cpf_cnpj(self, cpf: str) -> Cliente | None:
-        pass
-
-    @abstractmethod
     def buscar_por_id(self, id: int) -> Cliente | None:
         pass
 
@@ -27,10 +23,6 @@ class ClienteRepositoryInterface(ABC):
 class FuncionarioRepositoryInterface(ABC):
     @abstractmethod
     def salvar(self, funcionario: Funcionario) -> Funcionario:
-        pass
-
-    @abstractmethod
-    def buscar_por_matricula(self, matricula: int) -> Funcionario | None:
         pass
 
     @abstractmethod

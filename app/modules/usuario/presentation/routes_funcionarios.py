@@ -37,17 +37,6 @@ def consultar_funcionario(
     return use_case.executar_consulta_por_id(funcionario_id)
 
 
-# TODO: AJUSTAR ROTA
-@router.get('/matricula/{matricula}', response_model=FuncionarioOutputDTO)
-def consultar_funcionario_por_matricula(
-    matricula: int,
-    usuario_id=Depends(obter_id_usuario_logado),
-    db: Session = Depends(get_db),
-):
-    use_case = ConsultarFuncionarioUseCase(db)
-    return use_case.executar_consulta_por_matricula(matricula)
-
-
 @router.put('/{funcionario_id}', response_model=FuncionarioOutputDTO)
 def alterar_funcionario(
     funcionario_id: int,
