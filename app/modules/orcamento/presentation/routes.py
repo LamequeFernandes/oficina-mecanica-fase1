@@ -51,19 +51,19 @@ def buscar_orcamento(
     return use_case.executar(orcamento_id)
 
 
-# @router.patch(
-#     '/{ordem_servico}/orcamento/{orcamento_id}/status',
-#     response_model=OrcamentoOutputDTO,
-# )
-# def alterar_status_orcamento(
-#     ordem_servico: int,
-#     orcamento_id: int,
-#     dados: OrcamentoAlteraStatusDTO,
-#     db: Session = Depends(get_db),
-#     funcionario_logado: FuncionarioModel = Depends(obter_mecanico_logado),
-# ):
-#     use_case = AlterarStatusOrcamentoUseCase(db, funcionario_logado)
-#     return use_case.executar(orcamento_id, dados.status_orcamento)
+@router.patch(
+    '/{ordem_servico}/orcamento/{orcamento_id}/status',
+    response_model=OrcamentoOutputDTO,
+)
+def alterar_status_orcamento(
+    ordem_servico: int,
+    orcamento_id: int,
+    dados: OrcamentoAlteraStatusDTO,
+    db: Session = Depends(get_db),
+    funcionario_logado: FuncionarioModel = Depends(obter_mecanico_logado),
+):
+    use_case = AlterarStatusOrcamentoUseCase(db, funcionario_logado)
+    return use_case.executar(orcamento_id, dados.status_orcamento)
 
 
 @router.delete('/{ordem_servico}/orcamento/{orcamento_id}', status_code=204)

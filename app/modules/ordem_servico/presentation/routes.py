@@ -69,7 +69,7 @@ def listar_ordens_servico_por_veiculo(
 
 
 @router.patch(
-    '/veiculos/{veiculo_id}/ordens_servico/{ordem_servico_id}',
+    '/veiculos/{veiculo_id}/ordens_servico/{ordem_servico_id}/status',
     response_model=OrdemServicoOutputDTO,
 )
 def atualizar_status_ordem_servico(
@@ -87,6 +87,7 @@ def atualizar_status_ordem_servico(
 
 @router.delete(
     '/veiculos/{veiculo_id}/ordens_servico/{ordem_servico_id}',
+    status_code=204, response_model=None
 )
 def remover_ordem_servico(
     veiculo_id: int,

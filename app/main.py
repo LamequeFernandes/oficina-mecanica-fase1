@@ -33,7 +33,7 @@ app.include_router(
 app.include_router(router_veiculos, prefix='/veiculos', tags=['Veículos'])
 app.include_router(router_ordem_servico, tags=['Ordem de Serviço'])
 app.include_router(
-    router_orcamento, prefix='/veiculos/ordem-servico', tags=['Orçamento']
+    router_orcamento, prefix='/veiculos/{veiculo_id}/ordem-servicos', tags=['Orçamento']
 )
 app.include_router(router_servico, prefix='/servico', tags=['Serviços'])
 app.include_router(router_peca, prefix='/peca', tags=['Peças'])
