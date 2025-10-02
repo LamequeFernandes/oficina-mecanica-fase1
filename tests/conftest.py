@@ -111,7 +111,7 @@ def obter_cliente():
 
 
 @pytest.fixture
-def token_admin():
+def obter_admin():
     email_admin_teste = "robin@teste.com"
     senha_admin_teste = "robin123"
     
@@ -123,7 +123,7 @@ def token_admin():
         "matricula": "1234567",
         "tipo": "ADMINISTRADOR"
     }
-    response = client.post(
+    admin_novo = client.post(
         "/usuarios/funcionarios/cadastrar", 
         json=admin_novo
     )
@@ -134,7 +134,7 @@ def token_admin():
             "password": senha_admin_teste
         } 
     )
-    yield response.json()["access_token"]
+    yield response.json()["access_token"], FuncionarioOutputDTO(**admin_novo.json())
     deleta_funcionario(email_admin_teste)
 
 

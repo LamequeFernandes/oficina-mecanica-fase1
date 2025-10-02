@@ -62,8 +62,9 @@ def test_listar_ordens_servico_por_veiculo(obter_ordem_servico):
     )
 
 
-def test_alterar_status_ordem_servico(obter_ordem_servico, token_admin):
+def test_alterar_status_ordem_servico(obter_ordem_servico, obter_admin):
     _, ordem_servico = obter_ordem_servico
+    token_admin, _ = obter_admin
     response = client.patch(
         f"/veiculos/{ordem_servico.veiculo.veiculo_id}/ordens_servico/{ordem_servico.ordem_servico_id}/status",
         json={
@@ -78,8 +79,9 @@ def test_alterar_status_ordem_servico(obter_ordem_servico, token_admin):
     assert body["status"] == "EM_DIAGNOSTICO"
 
 
-def test_deletar_ordem_servico(obter_ordem_servico, token_admin):
+def test_deletar_ordem_servico(obter_ordem_servico, obter_admin):
     _, ordem_servico = obter_ordem_servico
+    token_admin, _ = obter_admin
     response = client.delete(
         f"/veiculos/{ordem_servico.veiculo.veiculo_id}/ordens_servico/{ordem_servico.ordem_servico_id}",
         headers={
