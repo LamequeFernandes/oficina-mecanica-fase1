@@ -5,7 +5,8 @@ from app.modules.veiculo.application.dto import VeiculoInputDTO
 client = TestClient(app, raise_server_exceptions=False)
 
 
-def test_cadastrar_veiculo(token_cliente):
+def test_cadastrar_veiculo(obter_cliente):
+    token_cliente, _ = obter_cliente
     veiculo_novo = VeiculoInputDTO(
         placa="AAA1111", modelo="FIAT UNO", ano=2010
     )

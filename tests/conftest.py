@@ -5,7 +5,7 @@ from app.modules.orcamento.domain.entities import StatusOrcamento
 from app.modules.ordem_servico.application.dto import OrdemServicoOutputDTO
 from app.modules.peca.application.dto import PecaInputDTO, PecaOutDTO
 from app.modules.servico.application.dto import ServicoOutDTO
-from app.modules.usuario.application.dto import FuncionarioOutputDTO
+from app.modules.usuario.application.dto import ClienteOutputDTO, FuncionarioOutputDTO
 from app.modules.usuario.infrastructure.models import UsuarioModel, ClienteModel, FuncionarioModel
 from fastapi.testclient import TestClient
 from app.main import app
@@ -77,12 +77,12 @@ def criar_cliente_teste():
         "/usuarios/clientes/cadastrar", 
         json=cliente_novo
     )
-    yield 
+    yield ClienteOutputDTO(**cliente.json())
     deleta_cliente(email_cliente_teste)
 
 
 @pytest.fixture
-def token_cliente():
+def obter_cliente():
     email_cliente_teste = "lameque@teste.com"
     senha_cliente_teste = "lameque123"
     
@@ -94,7 +94,7 @@ def token_cliente():
         "cpf_cnpj": "32735323005",
         "tipo": "PF"
     }
-    client.post(
+    cliente_novo = client.post(
         "/usuarios/clientes/cadastrar", 
         json=cliente_novo
     )
@@ -106,7 +106,7 @@ def token_cliente():
             "password": senha_cliente_teste
         } 
     )
-    yield response.json()["access_token"]
+    yield response.json()["access_token"], ClienteOutputDTO(**cliente_novo.json())
     deleta_cliente(email_cliente_teste)
 
 
@@ -168,7 +168,8 @@ def obter_mecanico():
 
 
 @pytest.fixture
-def obter_veiculo(token_cliente):
+def obter_veiculo(obter_cliente):
+    token_cliente, _ = obter_cliente
     veiculo_novo = VeiculoInputDTO(
         placa="AAA1111", modelo="FIAT UNO", ano=2010
     )

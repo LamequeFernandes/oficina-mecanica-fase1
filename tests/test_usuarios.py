@@ -73,4 +73,15 @@ def test_login_invalido():
 
     assert response.status_code == 401
     assert response.json()["detail"] == "Credenciais inválidas" 
-    
+
+
+def test_obter_cliente_por_id(obter_cliente):
+    token_cliente, _ = obter_cliente
+    response = client.get(
+        "/usuarios/me",
+        headers={
+            "Authorization": f"Bearer {token_cliente}"
+        }
+    )
+    assert response.status_code == 200
+    assert response.json()["email"] == "lameque@teste.com"
