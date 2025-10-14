@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
       - name: fastapi
-        image: your-docker-repo/my-fastapi-fase2:latest  # Replace with your Docker repo
+        image: lamequesao/oficina-api:latest  # Substitua pelo seu repositório Docker
         ports:
         - containerPort: 8000
         envFrom:

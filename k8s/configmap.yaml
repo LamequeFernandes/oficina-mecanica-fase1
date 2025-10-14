@@ -3,7 +3,7 @@ kind: ConfigMap
 metadata:
   name: app-config
 data:
-  HOST_DB: "<RDS_ENDPOINT_AQUI>"  # Ex.: mysql-instance.abcdef123456.us-east-1.rds.amazonaws.com (do output Terraform db_address)
+  HOST_DB: "<RDS_ENDPOINT_DB>"  # Ex.: mysql-instance.abcdef123456.us-east-1.rds.amazonaws.com (do output Terraform db_address)
   PORT_DB: "3306"
   DATABASE: "oficina_fase1"
   ALGORITHM: "HS256"  # Ajuste conforme necessário

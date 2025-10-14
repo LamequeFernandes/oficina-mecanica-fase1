@@ -57,11 +57,19 @@ jobs:
         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         aws-region: us-east-1
 
+    # - name: Get RDS endpoint from Terraform
+    #   id: terraform
+    #   run: |
+    #     cd terraform/
+    #     RDS_ENDPOINT=$(terraform output -raw db_address)
+    #     echo "RDS_ENDPOINT=$RDS_ENDPOINT" >> $GITHUB_ENV
+
     - name: Update kubeconfig
       run: aws eks update-kubeconfig --name oficina-fase2 --region us-east-1
 
     - name: Deploy to Kubernetes
       run: |
+        sed -i "s|<RDS_ENDPOINT_DB>|${{ secrets.RDS_ENDPOINT }}|g" k8s/configmap.yaml
         kubectl apply -f k8s/configmap.yaml
         kubectl apply -f k8s/secrets.yaml
         kubectl set image deployment/fastapi-app fastapi= lamequesao/oficina-api:${{ github.sha }}
