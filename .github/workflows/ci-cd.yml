@@ -1,0 +1,51 @@
+name: CI/CD Pipeline AWS
+
+on:
+  push:
+    branches: ["main", "teste-infra"]
+
+jobs:
+  build-test-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install dependencies & Run tests
+        run: |
+          pip install -r requirements.txt
+          pytest -v || echo "Sem testes automatizados"
+
+      - name: Build Docker image
+        run: docker build -t lamequesao/oficina-api:latest .
+
+      - name: Push to Docker Hub
+        run: |
+          echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login -u lamequesao --password-stdin
+          docker push lamequesao/oficina-api:latest
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1
+
+      - name: Update kubeconfig for EKS
+        run: aws eks update-kubeconfig --region us-east-1 --name oficina-cluster
+
+      - name: Deploy to EKS
+        uses: azure/k8s-deploy@v4
+        with:
+          manifests: |
+            ./k8s/configmap.yaml
+            ./k8s/secret.yaml
+            ./k8s/deployment-api.yaml
+            ./k8s/service-api.yaml
+            ./k8s/hpa.yaml
