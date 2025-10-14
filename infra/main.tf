@@ -146,3 +146,28 @@ resource "null_resource" "db_schema_init" {
     EOT
   }
 }
+
+# SERVIDOR PARA EMAILS
+
+resource "aws_ses_email_identity" "oficina_email" {
+  email = "noreply@oficina-lameque.com"
+}
+
+resource "aws_ses_configuration_set" "oficina_config" {
+  name = "oficina-config-set"
+}
+
+resource "aws_sns_topic" "email_notifications" {
+  name = "oficina-email-notifications"
+}
+
+resource "aws_ses_event_destination" "oficina_events" {
+  name                   = "oficina-events"
+  configuration_set_name = aws_ses_configuration_set.oficina_config.name
+  enabled                = true
+  matching_types         = ["send", "reject", "bounce", "complaint", "delivery"]
+
+  sns_destination {
+    topic_arn = aws_sns_topic.email_notifications.arn
+  }
+}
