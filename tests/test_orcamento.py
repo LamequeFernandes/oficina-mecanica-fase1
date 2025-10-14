@@ -24,7 +24,7 @@ def test_cadastrar_ordem_servico(obter_ordem_servico, obter_mecanico):
 
 
 def test_buscar_orcamento(obter_orcamento, obter_mecanico):
-    _, ordem_servico, orcamento = obter_orcamento
+    _, _, ordem_servico, orcamento = obter_orcamento
     token_mecanico, _ = obter_mecanico
     response = client.get(
         f"/veiculos/{ordem_servico.veiculo.veiculo_id}/ordem-servicos/{ordem_servico.ordem_servico_id}/orcamento/{orcamento.orcamento_id}",

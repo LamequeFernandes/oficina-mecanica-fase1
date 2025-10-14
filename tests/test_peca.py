@@ -47,7 +47,7 @@ def test_listar_tipo_pecas(obter_mecanico):
 
 
 def test_vincular_peca_orcamento(obter_peca, obter_orcamento):
-    _, _, orcamento = obter_orcamento
+    _, _, _, orcamento = obter_orcamento
     token_mecanico, peca = obter_peca
     response = client.patch(
         f"/pecas/{peca.peca_id}/vincular/{orcamento.orcamento_id}",
