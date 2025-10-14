@@ -1,51 +1,74 @@
-name: CI/CD Pipeline AWS
+name: CI/CD Pipeline
 
 on:
   push:
-    branches: ["main", "teste-infra"]
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
 
 jobs:
-  build-test-deploy:
+  build-and-test:
     runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+    - uses: actions/checkout@v4
 
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.12'
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.12'
 
-      - name: Install dependencies & Run tests
-        run: |
-          pip install -r requirements.txt
-          pytest -v || echo "Sem testes automatizados"
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt  # Assumindo que requirements.txt existe
 
-      - name: Build Docker image
-        run: docker build -t lamequesao/oficina-api:latest .
+    - name: Run tests
+      run: |
+        pytest  # Assumindo testes com pytest
 
-      - name: Push to Docker Hub
-        run: |
-          echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login -u lamequesao --password-stdin
-          docker push lamequesao/oficina-api:latest
+    - name: Build Docker image
+      run: docker build -t lamequesao/oficina-api:${{ github.sha }} .
 
-      - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v4
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: us-east-1
+    - name: Push to Docker Hub
+      run: |
+        echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login -u lamequesao --password-stdin
+        docker push lamequesao/oficina-api:latest
 
-      - name: Update kubeconfig for EKS
-        run: aws eks update-kubeconfig --region us-east-1 --name oficina-cluster
+    # - name: Login to DockerHub
+    #   uses: docker/login-action@v3
+    #   with:
+    #     username: ${{ secrets.DOCKER_USERNAME }}
+    #     password: ${{ secrets.DOCKER_PASSWORD }}
 
-      - name: Deploy to EKS
-        uses: azure/k8s-deploy@v4
-        with:
-          manifests: |
-            ./k8s/configmap.yaml
-            ./k8s/secret.yaml
-            ./k8s/deployment-api.yaml
-            ./k8s/service-api.yaml
-            ./k8s/hpa.yaml
+    # - name: Push Docker image
+    #   run: docker push ${{ secrets.DOCKER_USERNAME }}/oficina-api:${{ github.sha }}
+
+  deploy:
+    needs: build-and-test
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v4
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: us-east-1
+
+    - name: Update kubeconfig
+      run: aws eks update-kubeconfig --name oficina-fase2 --region us-east-1
+
+    - name: Deploy to Kubernetes
+      run: |
+        kubectl apply -f k8s/configmap.yaml
+        kubectl apply -f k8s/secrets.yaml
+        kubectl set image deployment/fastapi-app fastapi= lamequesao/oficina-api:${{ github.sha }}
+        kubectl apply -f k8s/deployment-api.yaml
+        kubectl apply -f k8s/service-api.yaml
+        kubectl apply -f k8s/hpa.yaml
+
+    - name: Deploy Database (managed by Terraform)
+      run: |
+        echo "Banco de dados gerenciado pelo Terraform (RDS). Nenhum deploy K8s necessário."

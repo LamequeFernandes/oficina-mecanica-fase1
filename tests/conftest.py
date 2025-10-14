@@ -18,7 +18,7 @@ def deleta_cliente(email: str):
     db = SessionLocal()
 
     usuario = db.query(UsuarioModel).filter(UsuarioModel.email == email)
-    cliente = db.query(ClienteModel).filter(ClienteModel.usuario_id)
+    cliente = db.query(ClienteModel).filter(ClienteModel.usuario_id) # type: ignore
     cliente.delete()
     usuario.delete()
 
@@ -30,7 +30,7 @@ def deleta_funcionario(email: str):
     db = SessionLocal()
 
     usuario = db.query(UsuarioModel).filter(UsuarioModel.email == email)
-    funci = db.query(FuncionarioModel).filter(FuncionarioModel.usuario_id)
+    funci = db.query(FuncionarioModel).filter(FuncionarioModel.usuario_id) # type: ignore
     funci.delete()
     usuario.delete()
 
