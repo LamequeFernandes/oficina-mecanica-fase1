@@ -17,6 +17,11 @@ from app.core.database import Base, engine
 from app.core.__all_models import *  # noqa: F401
 Base.metadata.create_all(bind=engine)
 
+db = SessionLocal()
+db.add_all(servicos)
+db.add_all(pecas)
+db.commit()
+
 client = TestClient(app, raise_server_exceptions=False)
 
 
