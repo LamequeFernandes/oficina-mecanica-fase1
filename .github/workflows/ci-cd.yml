@@ -72,7 +72,7 @@ jobs:
         sed -i "s|<RDS_ENDPOINT_DB>|${{ secrets.RDS_ENDPOINT }}|g" k8s/configmap.yaml
         kubectl apply -f k8s/configmap.yaml
         kubectl apply -f k8s/secrets.yaml
-        kubectl set image deployment/fastapi-app fastapi= lamequesao/oficina-api:${{ github.sha }}
+        kubectl set image deployment/fastapi-app fastapi=lamequesao/oficina-api:${{ github.sha }}
         kubectl apply -f k8s/deployment-api.yaml
         kubectl apply -f k8s/service-api.yaml
         kubectl apply -f k8s/hpa.yaml
