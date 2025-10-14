@@ -67,11 +67,18 @@ jobs:
     - name: Update kubeconfig
       run: aws eks update-kubeconfig --name oficina-fase2 --region us-east-1
 
+    - name: Create Kubernetes Secrets
+      run: |
+        kubectl create secret generic app-secrets \
+          --from-literal=USER_DB=${{ secrets.DB_USERNAME }} \
+          --from-literal=PASSWORD_DB=${{ secrets.DB_PASSWORD }} \
+          --from-literal=SECRET_KEY=${{ secrets.SECRET_KEY }} \
+          --dry-run=client -o yaml | kubectl apply -f -
+
     - name: Deploy to Kubernetes
       run: |
         sed -i "s|<RDS_ENDPOINT_DB>|${{ secrets.RDS_ENDPOINT }}|g" k8s/configmap.yaml
         kubectl apply -f k8s/configmap.yaml
-        kubectl apply -f k8s/secrets.yaml
         kubectl apply -f k8s/deployment-api.yaml
         kubectl set image deployment/fastapi-app fastapi=lamequesao/oficina-api:${{ github.sha }}
         kubectl apply -f k8s/deployment-api.yaml
