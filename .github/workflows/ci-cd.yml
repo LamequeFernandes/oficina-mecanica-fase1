@@ -10,8 +10,6 @@ jobs:
   build-and-test:
     runs-on: ubuntu-latest
 
-    # SETUP MYSQL SERVICE E RUN TESTS
-    
     services:
       mysql:
         image: mysql:8
@@ -38,7 +36,7 @@ jobs:
       run: |
         python -m pip install --upgrade pip
         pip install -r requirements.txt 
-        pip install pytest pytest-cov pymysql
+        pip install pytest pytest-cov pymysql coverage
 
     - name: Wait for MySQL to be ready
       run: |
@@ -51,15 +49,10 @@ jobs:
           sleep 2
         done
 
-    # - name: Prepare test database
-    #   run: |
-    #     mysql -h 127.0.0.1 -uroot -proot oficina_test < ./scripts/create_db_oficina.sql
-
     - name: Initialize schema
       run: mysql -h 127.0.0.1 -uroot -proot oficina_test < ${{ github.workspace }}/scripts/create_db_oficina.sql
 
-
-    - name: Run tests
+    - name: Run tests with coverage
       env:
         USER_DB: root
         PASSWORD_DB: root
@@ -68,10 +61,43 @@ jobs:
         DATABASE: oficina_test
         SECRET_KEY: test_secret_key
         ALGORITHM: HS256
-      run: pytest --maxfail=1 --disable-warnings -q
+      run: |
+        pytest --cov=./ --cov-report=xml --cov-report=html --cov-fail-under=80 --maxfail=1 --disable-warnings -q
+
+    - name: Upload coverage report
+      uses: actions/upload-artifact@v4
+      with:
+        name: coverage-report
+        path: htmlcov/
+        retention-days: 30
+
+    - name: Check coverage
+      run: |
+        # Extrai a porcentagem de cobertura do arquivo XML
+        COVERAGE_PERCENT=$(python -c "
+        import xml.etree.ElementTree as ET
+        tree = ET.parse('coverage.xml')
+        root = tree.getroot()
+        coverage = root.attrib['line-rate']
+        print(f'{float(coverage)*100:.2f}%')
+        ")
+        echo "Coverage: $COVERAGE_PERCENT"
+        
+        # Verifica se a cobertura é pelo menos 80%
+        python -c "
+        import xml.etree.ElementTree as ET
+        tree = ET.parse('coverage.xml')
+        root = tree.getroot()
+        coverage = float(root.attrib['line-rate'])
+        print(f'Coverage: {coverage*100:.2f}%')
+        if coverage < 0.8:
+            print('ERROR: Coverage below 80%')
+            exit(1)
+        else:
+            print('SUCCESS: Coverage meets 80% requirement')
+        "
 
     # BUILD AND PUSH DOCKER IMAGE
-
     - name: Build Docker image
       run: docker build -t lamequesao/oficina-api:${{ github.sha }} .
 
@@ -83,7 +109,7 @@ jobs:
   deploy:
     needs: build-and-test
     runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/teste-infra'
+    if: github.ref == 'refs/heads/main'
     steps:
     - uses: actions/checkout@v4
 
