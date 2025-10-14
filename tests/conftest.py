@@ -11,6 +11,12 @@ from fastapi.testclient import TestClient
 from app.main import app
 from app.modules.veiculo.application.dto import VeiculoInputDTO
 
+
+from app.core.database import Base, engine
+
+from app.core.__all_models import *  # noqa: F401
+Base.metadata.create_all(bind=engine)
+
 client = TestClient(app, raise_server_exceptions=False)
 
 

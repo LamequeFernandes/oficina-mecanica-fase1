@@ -16,11 +16,11 @@ class ServicoModel(Base):
 
     servico_id = Column(Integer, primary_key=True, autoincrement=True)
     tipo_servico_id = Column(
-        Integer, ForeignKey('tipo_servico.tipo_servico_id'), nullable=False
+        Integer, ForeignKey('tipo_servico.tipo_servico_id', ondelete="CASCADE"), nullable=False
     )
     valor_servico = Column(Numeric(8, 2), nullable=False)
     orcamento_id = Column(
-        Integer, ForeignKey('orcamento.orcamento_id'), nullable=False
+        Integer, ForeignKey('orcamento.orcamento_id', ondelete="CASCADE"), nullable=False
     )
 
     tipo_servico = relationship('TipoServicoModel')
