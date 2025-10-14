@@ -88,3 +88,6 @@ jobs:
     - name: Deploy Database (managed by Terraform)
       run: |
         echo "Banco de dados gerenciado pelo Terraform (RDS). Nenhum deploy K8s necessário."
+
+    - name: Restart FastAPI Deployment
+      run: kubectl rollout restart deployment/fastapi-app
