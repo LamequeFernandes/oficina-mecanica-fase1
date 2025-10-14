@@ -42,15 +42,14 @@ def test_buscar_orcamento(obter_orcamento, obter_mecanico):
 
 
 def test_alterar_status_orcamento(obter_orcamento, obter_mecanico):
-    _, ordem_servico, orcamento = obter_orcamento
-    token_mecanico, _ = obter_mecanico
+    token_cliente, _, ordem_servico, orcamento = obter_orcamento
     response = client.patch(
         f"/veiculos/{ordem_servico.veiculo.veiculo_id}/ordem-servicos/{ordem_servico.ordem_servico_id}/orcamento/{orcamento.orcamento_id}/status",
         json={
             "status_orcamento": StatusOrcamento.APROVADO.value
         },
         headers={
-            "Authorization": f"Bearer {token_mecanico}"
+            "Authorization": f"Bearer {token_cliente}"
         }
     )
     assert response.status_code == 200

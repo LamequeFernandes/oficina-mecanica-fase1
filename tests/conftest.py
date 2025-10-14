@@ -223,7 +223,7 @@ def obter_orcamento(obter_ordem_servico, obter_mecanico):
             "Authorization": f"Bearer {token_mecanico}"
         }
     )
-    yield token_mecanico, ordem_servico, OrcamentoOutputDTO(**response.json())
+    yield token_cliente, token_mecanico, ordem_servico, OrcamentoOutputDTO(**response.json())
 
 
 @pytest.fixture
@@ -245,7 +245,7 @@ def obter_peca(obter_mecanico):
 
 @pytest.fixture
 def obter_servico(obter_orcamento):
-    token_mecanico, _ , orcamento = obter_orcamento
+    _, token_mecanico, _ , orcamento = obter_orcamento
     response = client.post(
         f"/servicos",
         json={
