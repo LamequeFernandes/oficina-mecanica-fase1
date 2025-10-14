@@ -53,7 +53,7 @@ jobs:
 
     - name: Prepare test database
       run: |
-        mysql -h 127.0.0.1 -uroot -proot oficina_test < create_db_oficina.sql
+        mysql -h 127.0.0.1 -uroot -proot oficina_test < ./scripts/create_db_oficina.sql
 
     - name: Run tests
       env:
