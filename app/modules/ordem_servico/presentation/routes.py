@@ -27,16 +27,6 @@ def listar_todas_ordens_de_servico(
     return use_case.execute_listar()
 
 
-@router.get('/ordens_servico/{ordem_servico_id}/status', response_model=StatusOrdemServicoOutputDTO)
-def consultar_status_ordem_servico(
-    ordem_servico_id: int,
-    usuario_logado=Depends(obter_usuario_logado),
-    db: Session = Depends(get_db)
-):
-    use_case = ConsultarOrdemServicoUseCase(db, usuario_logado)
-    return use_case.execute_obter_status(ordem_servico_id)
-
-
 @router.post(
     '/veiculos/{veiculo_id}/ordens_servico',
     response_model=OrdemServicoOutputDTO,
@@ -77,6 +67,17 @@ def listar_ordens_servico_por_veiculo(
 ):
     use_case = ConsultarOrdemServicoUseCase(db, usuario_logado)
     return use_case.execute_por_veiculo(veiculo_id)
+
+
+@router.get('/veiculos/{veiculo_id}/ordens_servico/{ordem_servico_id}/status', response_model=StatusOrdemServicoOutputDTO)
+def consultar_status_ordem_servico(
+    veiculo_id: int,
+    ordem_servico_id: int,
+    usuario_logado=Depends(obter_usuario_logado),
+    db: Session = Depends(get_db)
+):
+    use_case = ConsultarOrdemServicoUseCase(db, usuario_logado)
+    return use_case.execute_obter_status(ordem_servico_id)
 
 
 @router.patch(
