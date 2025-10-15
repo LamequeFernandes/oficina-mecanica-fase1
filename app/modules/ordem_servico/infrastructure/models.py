@@ -9,7 +9,7 @@ class OrdemServicoModel(Base):
 
     ordem_servico_id = Column(Integer, primary_key=True, autoincrement=True)
     veiculo_id = Column(
-        Integer, ForeignKey('veiculo.veiculo_id'), nullable=False
+        Integer, ForeignKey('veiculo.veiculo_id', ondelete="CASCADE"), nullable=False
     )
     status = Column(
         Enum(

@@ -72,11 +72,33 @@ class OrdemServicoRepository(OrdemServicoRepositoryInterface):
         ]
 
     def listar(self) -> list[OrdemServico]:
-        ordens_servico = self.db.query(OrdemServicoModel).all()
-        return [
+        ordens_servico = (
+            self.db.query(OrdemServicoModel)
+            .order_by(OrdemServicoModel.dta_criacao.asc())
+            .all()
+        )
+
+        ordens_servico_ordenadas = [
             OrdemServicoMapper.model_to_entity(ordem_servico)
             for ordem_servico in ordens_servico
+            if ordem_servico.status == StatusOrdemServico.EM_EXECUCAO.value # type: ignore
         ]
+        ordens_servico_ordenadas += [
+            OrdemServicoMapper.model_to_entity(ordem_servico)
+            for ordem_servico in ordens_servico
+            if ordem_servico.status == StatusOrdemServico.AGUARDANDO_APROVACAO.value  # type: ignore
+        ]
+        ordens_servico_ordenadas += [
+            OrdemServicoMapper.model_to_entity(ordem_servico)
+            for ordem_servico in ordens_servico
+            if ordem_servico.status == StatusOrdemServico.EM_DIAGNOSTICO.value  # type: ignore
+        ]
+        ordens_servico_ordenadas += [
+            OrdemServicoMapper.model_to_entity(ordem_servico)
+            for ordem_servico in ordens_servico
+            if ordem_servico.status == StatusOrdemServico.RECEBIDA.value  # type: ignore
+        ]
+        return ordens_servico_ordenadas
 
     def alterar(self, ordem_servico: OrdemServico) -> OrdemServico:
         ordem_servico_model = self.db.query(OrdemServicoModel).filter(

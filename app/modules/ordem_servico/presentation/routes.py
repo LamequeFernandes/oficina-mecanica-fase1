@@ -12,6 +12,7 @@ from app.modules.ordem_servico.application.dto import (
     OrdemServicoAlteracaoStatusInputDTO,
     OrdemServicoCriacaoInputDTO,
     OrdemServicoOutputDTO,
+    StatusOrdemServicoOutputDTO,
 )
 
 
@@ -24,6 +25,16 @@ def listar_todas_ordens_de_servico(
 ):
     use_case = ConsultarOrdemServicoUseCase(db, usuario_logado)
     return use_case.execute_listar()
+
+
+@router.get('/ordens_servico/{ordem_servico_id}/status', response_model=StatusOrdemServicoOutputDTO)
+def consultar_status_ordem_servico(
+    ordem_servico_id: int,
+    usuario_logado=Depends(obter_usuario_logado),
+    db: Session = Depends(get_db)
+):
+    use_case = ConsultarOrdemServicoUseCase(db, usuario_logado)
+    return use_case.execute_obter_status(ordem_servico_id)
 
 
 @router.post(

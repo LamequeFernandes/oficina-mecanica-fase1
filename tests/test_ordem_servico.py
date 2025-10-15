@@ -101,3 +101,16 @@ def test_deletar_ordem_servico_erro_permissao(obter_ordem_servico):
     )
     assert response.status_code == 403
 
+
+def test_consultar_status_ordem_servico(obter_ordem_servico):
+    token_cliente, ordem_servico = obter_ordem_servico
+    response = client.get(
+        f"/ordens_servico/{ordem_servico.ordem_servico_id}/status",
+        headers={
+            "Authorization": f"Bearer {token_cliente}"
+        }
+    )
+    body = response.json()
+    assert response.status_code == 200
+    assert "status" in body
+

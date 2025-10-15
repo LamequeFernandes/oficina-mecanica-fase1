@@ -9,7 +9,7 @@ class VeiculoModel(Base):
 
     veiculo_id = Column(Integer, primary_key=True, autoincrement=True)
     cliente_id = Column(
-        Integer, ForeignKey('cliente.cliente_id'), nullable=False
+        Integer, ForeignKey('cliente.cliente_id', ondelete="CASCADE"), nullable=False
     )
     placa = Column(String(7), unique=True, nullable=False)
     modelo = Column(String(255), nullable=False)

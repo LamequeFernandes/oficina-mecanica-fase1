@@ -7,6 +7,7 @@ from .dto import (
     OrdemServicoCriacaoInputDTO,
     OrdemServicoOutputDTO,
     StatusOrdemServico,
+    StatusOrdemServicoOutputDTO,
 )
 from app.modules.ordem_servico.infrastructure.mapper import OrdemServicoMapper
 from app.modules.ordem_servico.infrastructure.repositories import (
@@ -165,6 +166,13 @@ class ConsultarOrdemServicoUseCase:
             OrdemServicoMapper.entity_to_output_dto(ordem)
             for ordem in ordens_servico
         ]
+    
+    def execute_obter_status(self, ordem_servico_id: int) -> StatusOrdemServicoOutputDTO:
+        ordem_servico = self.repo.buscar_por_id(ordem_servico_id)
+        if not ordem_servico:
+            raise OrdemServicoNotFoundError
+        self.valida_vinculo_com_veiculo(self.usuario_logado, ordem_servico)
+        return StatusOrdemServicoOutputDTO(status=ordem_servico.status)  # type: ignore
 
 
 class RemoverServicoUseCase:
