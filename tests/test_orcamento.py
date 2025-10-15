@@ -24,7 +24,7 @@ def test_cadastrar_ordem_servico(obter_ordem_servico, obter_mecanico):
 
 
 def test_buscar_orcamento(obter_orcamento, obter_mecanico):
-    _, _, ordem_servico, orcamento = obter_orcamento
+    _, ordem_servico, orcamento = obter_orcamento
     token_mecanico, _ = obter_mecanico
     response = client.get(
         f"/veiculos/{ordem_servico.veiculo.veiculo_id}/ordem-servicos/{ordem_servico.ordem_servico_id}/orcamento/{orcamento.orcamento_id}",
@@ -42,14 +42,15 @@ def test_buscar_orcamento(obter_orcamento, obter_mecanico):
 
 
 def test_alterar_status_orcamento(obter_orcamento, obter_mecanico):
-    token_cliente, _, ordem_servico, orcamento = obter_orcamento
+    _, ordem_servico, orcamento = obter_orcamento
+    token_mecanico, _ = obter_mecanico
     response = client.patch(
         f"/veiculos/{ordem_servico.veiculo.veiculo_id}/ordem-servicos/{ordem_servico.ordem_servico_id}/orcamento/{orcamento.orcamento_id}/status",
         json={
             "status_orcamento": StatusOrcamento.APROVADO.value
         },
         headers={
-            "Authorization": f"Bearer {token_cliente}"
+            "Authorization": f"Bearer {token_mecanico}"
         }
     )
     assert response.status_code == 200

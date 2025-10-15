@@ -7,7 +7,7 @@ from app.core.exceptions import (
     ValorDuplicadoError,
 )
 from app.core.utils import obter_valor_e_key_duplicado_integrity_error
-from app.modules.usuario.infrastructure.models import ClienteModel, FuncionarioModel
+from app.modules.usuario.infrastructure.models import FuncionarioModel
 from app.modules.ordem_servico.infrastructure.models import OrdemServicoModel
 
 from app.modules.orcamento.application.dto import (
@@ -87,28 +87,16 @@ class BuscarOrcamentoUseCase:
 
 
 class AlterarStatusOrcamentoUseCase:
-    def __init__(self, db: Session, cliente_logado: ClienteModel):
+    def __init__(self, db: Session, mecanico_logado: FuncionarioModel):
         self.repo = OrcamentoRepository(db)
-        self.cliente_logado = cliente_logado
-        # self.mecanico_logado = mecanico_logado
+        self.mecanico_logado = mecanico_logado
 
-    # def eh_mecanico_responsavel(self, orcamento: Orcamento) -> bool:
-    #     return orcamento.funcionario_id == self.mecanico_logado.funcionario_id
-
-    def eh_cliente_dono_ordem_servico(self, orcamento: Orcamento) -> bool:
-        for veiculo in self.cliente_logado.veiculos:
-            for ordem in veiculo.ordens_servico:
-                if ordem.ordem_servico_id == orcamento.ordem_servico_id:
-                    return True
-        return False
+    def eh_mecanico_responsavel(self, orcamento: Orcamento) -> bool:
+        return orcamento.funcionario_id == self.mecanico_logado.funcionario_id
 
     def validar_alteracao(self, orcamento: Orcamento) -> None:
-        # if not self.eh_mecanico_responsavel(orcamento):
-        #     raise ApenasMecanicoResponsavel
-        if not self.eh_cliente_dono_ordem_servico(orcamento):
-            raise ValueError(
-                'Apenas o cliente dono da ordem de serviço pode alterar o status do orçamento.'
-            )
+        if not self.eh_mecanico_responsavel(orcamento):
+            raise ApenasMecanicoResponsavel
         if orcamento.status_orcamento == StatusOrcamento.APROVADO:
             raise ValueError(
                 'Não é possível alterar o status de um orçamento que já foi aprovado.'

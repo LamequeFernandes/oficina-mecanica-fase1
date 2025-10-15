@@ -11,17 +11,6 @@ from fastapi.testclient import TestClient
 from app.main import app
 from app.modules.veiculo.application.dto import VeiculoInputDTO
 
-
-from app.core.database import Base, engine
-
-from app.core.__all_models import *  # noqa: F401
-Base.metadata.create_all(bind=engine)
-
-db = SessionLocal()
-db.add_all(servicos)
-db.add_all(pecas)
-db.commit()
-
 client = TestClient(app, raise_server_exceptions=False)
 
 
@@ -29,7 +18,7 @@ def deleta_cliente(email: str):
     db = SessionLocal()
 
     usuario = db.query(UsuarioModel).filter(UsuarioModel.email == email)
-    cliente = db.query(ClienteModel).filter(ClienteModel.usuario_id) # type: ignore
+    cliente = db.query(ClienteModel).filter(ClienteModel.usuario_id)
     cliente.delete()
     usuario.delete()
 
@@ -41,7 +30,7 @@ def deleta_funcionario(email: str):
     db = SessionLocal()
 
     usuario = db.query(UsuarioModel).filter(UsuarioModel.email == email)
-    funci = db.query(FuncionarioModel).filter(FuncionarioModel.usuario_id) # type: ignore
+    funci = db.query(FuncionarioModel).filter(FuncionarioModel.usuario_id)
     funci.delete()
     usuario.delete()
 
@@ -223,7 +212,7 @@ def obter_orcamento(obter_ordem_servico, obter_mecanico):
             "Authorization": f"Bearer {token_mecanico}"
         }
     )
-    yield token_cliente, token_mecanico, ordem_servico, OrcamentoOutputDTO(**response.json())
+    yield token_mecanico, ordem_servico, OrcamentoOutputDTO(**response.json())
 
 
 @pytest.fixture
@@ -245,7 +234,7 @@ def obter_peca(obter_mecanico):
 
 @pytest.fixture
 def obter_servico(obter_orcamento):
-    _, token_mecanico, _ , orcamento = obter_orcamento
+    token_mecanico, _ , orcamento = obter_orcamento
     response = client.post(
         f"/servicos",
         json={

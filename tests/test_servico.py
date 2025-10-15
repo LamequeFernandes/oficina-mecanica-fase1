@@ -23,15 +23,34 @@ def test_cadastrar_ordem_servico(obter_ordem_servico, obter_mecanico):
     assert response.status_code == 201
 
 
-def test_alterar_status_orcamento(obter_orcamento):
-    token_cliente, _, ordem_servico, orcamento = obter_orcamento
+def test_buscar_orcamento(obter_orcamento, obter_mecanico):
+    _, ordem_servico, orcamento = obter_orcamento
+    token_mecanico, _ = obter_mecanico
+    response = client.get(
+        f"/veiculos/{ordem_servico.veiculo.veiculo_id}/ordem-servicos/{ordem_servico.ordem_servico_id}/orcamento/{orcamento.orcamento_id}",
+        headers={
+            "Authorization": f"Bearer {token_mecanico}"
+        }
+    )
+    assert response.status_code == 200
+    assert response.json()["orcamento_id"] == orcamento.orcamento_id
+    assert response.json()["funcionario_id"] == orcamento.funcionario_id
+    assert response.json()["valor_total_orcamento"] == orcamento.valor_total_orcamento
+    assert response.json()["dta_criacao"] == orcamento.dta_criacao.isoformat()
+    assert response.json()["dta_cancelamento"] == orcamento.dta_cancelamento
+    assert response.json()["funcionario_responsavel"]["funcionario_id"] == orcamento.funcionario_responsavel.funcionario_id
+
+
+def test_alterar_status_orcamento(obter_orcamento, obter_mecanico):
+    _, ordem_servico, orcamento = obter_orcamento
+    token_mecanico, _ = obter_mecanico
     response = client.patch(
         f"/veiculos/{ordem_servico.veiculo.veiculo_id}/ordem-servicos/{ordem_servico.ordem_servico_id}/orcamento/{orcamento.orcamento_id}/status",
         json={
             "status_orcamento": StatusOrcamento.APROVADO.value
         },
         headers={
-            "Authorization": f"Bearer {token_cliente}"
+            "Authorization": f"Bearer {token_mecanico}"
         }
     )
     assert response.status_code == 200
@@ -63,7 +82,7 @@ def test_obter_tipo_servico(obter_mecanico):
 
 def test_vincular_servico_orcamento(obter_servico, obter_orcamento):
     _, servico = obter_servico
-    _, token_mecanico, _ , orcamento = obter_orcamento
+    token_mecanico, _ , orcamento = obter_orcamento
     response = client.patch(
         f"/servicos/{servico.servico_id}/vincular/{orcamento.orcamento_id}",
         headers={

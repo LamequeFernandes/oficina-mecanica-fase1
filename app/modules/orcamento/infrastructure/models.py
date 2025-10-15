@@ -13,12 +13,12 @@ class OrcamentoModel(Base):
         nullable=False,
     )
     ordem_servico_id = Column(
-        Integer, ForeignKey('ordem_servico.ordem_servico_id', ondelete="CASCADE"), nullable=False
+        Integer, ForeignKey('ordem_servico.ordem_servico_id'), nullable=False
     )
     dta_criacao = Column(DateTime, default=datetime.now)
     dta_cancelamento = Column(DateTime, nullable=True)
     funcionario_id = Column(
-        Integer, ForeignKey('funcionario.funcionario_id', ondelete="CASCADE"), nullable=False
+        Integer, ForeignKey('funcionario.funcionario_id'), nullable=False
     )
 
     # Relacionamentos

@@ -201,36 +201,3 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
-
-# Local .terraform directories
-**/.terraform/*
-
-# .tfstate files (contain sensitive data and resource attributes)
-*.tfstate
-*.tfstate.*
-
-# Crash log files
-crash.log
-crash.*.log
-
-# Terraform variable files (potentially contain sensitive data like passwords or keys)
-*.tfvars
-*.tfvars.json
-
-# Override files (used for local overrides and not usually checked in)
-override.tf
-override.tf.json
-*_override.tf
-*_override.tf.json
-
-# Terraform plan files (output of `terraform plan -out=tfplan`)
-# Uncomment if you want to ignore these
-# *tfplan*
-
-# Ignore CLI configuration files
-.terraformrc
-terraform.rc
-
-# Ignore the .terraform.lock.hcl file in specific scenarios
-# (though it's generally recommended to commit this for dependency consistency)
-# **/.terraform.lock.hcl

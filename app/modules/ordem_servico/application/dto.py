@@ -24,7 +24,3 @@ class OrdemServicoCriacaoInputDTO(BaseModel):
 
 class OrdemServicoAlteracaoStatusInputDTO(BaseModel):
     status: StatusOrdemServico
-
-
-class StatusOrdemServicoOutputDTO(BaseModel):
-    status: StatusOrdemServico

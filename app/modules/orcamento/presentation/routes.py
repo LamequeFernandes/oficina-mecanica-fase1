@@ -2,11 +2,10 @@ from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 from app.core.database import get_db
 from app.core.dependencies import (
-    obter_cliente_logado,
     obter_funcionario_logado,
     obter_mecanico_logado,
 )
-from app.modules.usuario.infrastructure.models import ClienteModel, FuncionarioModel
+from app.modules.usuario.infrastructure.models import FuncionarioModel
 from app.modules.orcamento.application.use_cases import (
     CriarOrcamentoUseCase,
     BuscarOrcamentoUseCase,
@@ -61,9 +60,9 @@ def alterar_status_orcamento(
     orcamento_id: int,
     dados: OrcamentoAlteraStatusDTO,
     db: Session = Depends(get_db),
-    cliente_logado: ClienteModel = Depends(obter_cliente_logado),
+    funcionario_logado: FuncionarioModel = Depends(obter_mecanico_logado),
 ):
-    use_case = AlterarStatusOrcamentoUseCase(db, cliente_logado)
+    use_case = AlterarStatusOrcamentoUseCase(db, funcionario_logado)
     return use_case.executar(orcamento_id, dados.status_orcamento)
 
 
