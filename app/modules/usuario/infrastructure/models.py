@@ -66,6 +66,7 @@ class FuncionarioModel(Base):
         Enum('ADMINISTRADOR', 'MECANICO', name='tipo_funcionario'),
         nullable=False,
     )
+    cpf = Column(String(11), unique=True, nullable=False)
 
     # Relacionamentos
     usuario = relationship('UsuarioModel', back_populates='funcionario')

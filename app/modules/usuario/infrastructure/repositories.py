@@ -106,6 +106,7 @@ class FuncionarioRepository(FuncionarioRepositoryInterface):
             matricula=funcionario.matricula,
             tipo_funcionario=funcionario.tipo,
             usuario=usuario_model,
+            cpf=funcionario.cpf,
         )
 
         self.db.add(funcionario_model)

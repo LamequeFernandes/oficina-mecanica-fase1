@@ -61,6 +61,7 @@ class FuncionarioMapper:
             funcionario_id=funcionario.funcionario_id,
             matricula=funcionario.matricula,
             tipo_funcionario=funcionario.tipo,
+            cpf=funcionario.cpf,
             usuario=UsuarioModel(
                 usuario_id=funcionario.usuario.usuario_id,
                 email=funcionario.usuario.email,
@@ -76,6 +77,7 @@ class FuncionarioMapper:
             funcionario_id=funcionario.funcionario_id,  # type: ignore
             matricula=funcionario.matricula,  # type: ignore
             tipo=funcionario.tipo_funcionario,  # type: ignore
+            cpf=funcionario.cpf,
             usuario=Usuario(
                 usuario_id=funcionario.usuario.usuario_id,
                 email=funcionario.usuario.email,
@@ -93,4 +95,5 @@ class FuncionarioMapper:
             nome=funcionario.usuario.nome,
             matricula=funcionario.matricula,
             tipo=funcionario.tipo, 
+            cpf=funcionario.cpf
         )

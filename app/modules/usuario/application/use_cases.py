@@ -170,6 +170,7 @@ class CriarFuncionarioUseCase:
             usuario=usuario,
             matricula=dados.matricula,
             tipo=dados.tipo,
+            cpf=dados.cpf,
         )
 
         funcionario_salvo = self.repo.salvar(funcionario)
@@ -229,6 +230,7 @@ class AlterarFuncionarioUseCase:
         funcionario.tipo = dados.tipo
         funcionario.usuario.email = dados.email
         funcionario.usuario.nome = dados.nome
+        funcionario.cpf = dados.cpf
         funcionario.usuario.senha = criar_hash_senha(dados.senha)
 
         funcionario_alterado = self.repo.alterar(funcionario)

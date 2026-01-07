@@ -29,7 +29,7 @@ def decodificar_token_jwt(token: str) -> int | None:
     """Valida o token e retorna o ID do usuário."""
     try:
         payload = jwt.decode(
-            token, settings.SECRET_KEY, algorithms=[settings.ALGORITHM]
+            token, settings.SECRET_KEY, algorithms=[settings.ALGORITHM], issuer='oficina-auth'  # type: ignore
         )
         return int(payload.get('sub'))   # type: ignore
     except (JWTError, ValueError):

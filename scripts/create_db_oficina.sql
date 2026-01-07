@@ -69,6 +69,7 @@ CREATE TABLE `funcionario` (
   `funcionario_id` int NOT NULL AUTO_INCREMENT,
   `usuario_id` int NOT NULL,
   `matricula` int NOT NULL,
+  `cpf` varchar(11) NOT NULL,
   `tipo_funcionario` enum('ADMINISTRADOR','MECANICO') NOT NULL,
   PRIMARY KEY (`funcionario_id`),
   UNIQUE KEY `usuario_id` (`usuario_id`),

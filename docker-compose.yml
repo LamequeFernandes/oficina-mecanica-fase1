@@ -21,6 +21,15 @@ services:
       - '8000:8000'
     depends_on:
       - db
+    environment:
+      - USER_DB=lameque
+      - PASSWORD_DB=lameque123
+      - HOST_DB=db
+      - PORT_DB=3306
+      - DATABASE=oficina_fase1
+      - SECRET_KEY='fakerandomsecretkey'
+      - ALGORITHM=HS256
+
 
 volumes:
   mysql-volume:

@@ -40,6 +40,7 @@ class FuncionarioInputDTO(BaseModel):
     senha: str
     nome: str
     matricula: int
+    cpf: str
     tipo: str = 'ADMINISTRADOR'
 
 
@@ -48,7 +49,12 @@ class FuncionarioOutputDTO(BaseModel):
     email: str
     nome: str
     matricula: int
+    cpf: str
     tipo: str
+
+    @validator('cpf')
+    def validar_cpf(cls, v):
+        return f'{v[:3]}.***.***-{v[9:]}'
 
 
 class LoginInputDTO(BaseModel):
