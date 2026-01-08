@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from sqlalchemy import Column, Integer, String, ForeignKey, Enum, DateTime
+from sqlalchemy import Boolean, Column, Integer, String, ForeignKey, Enum, DateTime
 from sqlalchemy.orm import relationship
 
 from app.core.database import Base
@@ -14,6 +14,7 @@ class UsuarioModel(Base):
     senha = Column(String(255), nullable=False)
     nome = Column(String(255), nullable=False)
     dta_cadastro = Column(DateTime, default=datetime.now)
+    ativo = Column(Boolean, nullable=False, default=True)
 
     # Relacionamentos
     cliente = relationship(
