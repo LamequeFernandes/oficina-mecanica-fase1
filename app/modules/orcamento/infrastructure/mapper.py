@@ -33,6 +33,7 @@ class OrcamentoMapper:
                 usuario=orcamento_model.funcionario.usuario,  # type: ignore
                 matricula=orcamento_model.funcionario.matricula,  # type: ignore
                 tipo=orcamento_model.funcionario.tipo_funcionario,  # type: ignore
+                cpf=orcamento_model.funcionario.cpf,  # type: ignore
             ),
             servicos=[
                 ServicoMapper.model_to_entity(servico_model)

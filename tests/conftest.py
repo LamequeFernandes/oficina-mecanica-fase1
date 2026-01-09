@@ -132,7 +132,8 @@ def obter_admin():
         "senha": senha_admin_teste,
         "nome": "Robin Administrador Teste",
         "matricula": "1234567",
-        "tipo": "ADMINISTRADOR"
+        "tipo": "ADMINISTRADOR",
+        "cpf": "91704687020"
     }
     admin_novo = client.post(
         "/usuarios/funcionarios/cadastrar", 
@@ -160,7 +161,8 @@ def obter_mecanico():
         "senha": senha_mecanico_teste,
         "nome": "Joao Mecanico Teste",
         "matricula": "7654321",
-        "tipo": "MECANICO"
+        "tipo": "MECANICO",
+        "cpf": "91704687020"
     }
     mecanico_criado = client.post(
         "/usuarios/funcionarios/cadastrar", 
