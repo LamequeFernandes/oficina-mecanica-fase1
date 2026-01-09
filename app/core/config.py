@@ -20,13 +20,3 @@ class Settings(BaseSettings):
 
 
 settings = Settings()  # type: ignore
-
-print(settings.SECRET_KEY)  # type: ignore
-print(settings.DATABASE)  # type: ignore
-print(settings.USER_DB)  # type: ignore
-print(settings.PASSWORD_DB)  # type: ignore
-print(settings.HOST_DB)  # type: ignore
-print(settings.PORT_DB)  # type: ignore
-print(settings.ALGORITHM)  # type: ignore
-print(settings.JWT_ISSUER)  # type: ignore
-print(settings.JWT_AUDIENCE)  # type: ignore
