@@ -152,7 +152,7 @@ jobs:
         kubectl get svc -n oficina
         
         echo "=== ENDPOINT ==="
-        kubectl get svc oficina-api-service -n oficina -o jsonpath='{.status.loadBalancer.ingress[0].hostname}'
+        kubectl get svc oficina-api -n oficina -o jsonpath='{.status.loadBalancer.ingress[0].hostname}'
 
     - name: Notify Deployment Success
       run: echo "Deployment to Kubernetes cluster 'oficina-fase3-eks' completed successfully."
