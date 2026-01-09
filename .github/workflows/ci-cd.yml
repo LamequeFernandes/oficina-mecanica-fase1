@@ -126,14 +126,6 @@ jobs:
     - name: Update kubeconfig
       run: aws eks update-kubeconfig --name oficina-fase3-eks --region us-east-1
 
-    # - name: Create Kubernetes Secrets
-    #   run: |
-    #     kubectl create secret generic app-secrets \
-    #       --from-literal=USER_DB=${{ secrets.DB_USERNAME }} \
-    #       --from-literal=PASSWORD_DB=${{ secrets.DB_PASSWORD }} \
-    #       --from-literal=SECRET_KEY=${{ secrets.SECRET_KEY }} \
-    #       --dry-run=client -o yaml | kubectl apply -f -
-
     - name: Substitute Env Variables in Secret and Apply
       run: |
         sed -i "s|<USER_DB>|${{ secrets.DB_USERNAME }}|g" k8s/secret.yaml
@@ -146,14 +138,6 @@ jobs:
         sed -i "s|<JWT_ISSUER>|oficina-auth|g" k8s/secret.yaml
         sed -i "s|<JWT_AUDIENCE>|oficina-api|g" k8s/secret.yaml
         kubectl apply -f k8s/secret.yaml
-
-    - name: Deploy to Kubernetes
-      run: |
-        sed -i "s|<RDS_ENDPOINT_DB>|${{ secrets.RDS_ENDPOINT }}|g" k8s/configmap.yaml
-        kubectl apply -f k8s/deployment-api.yaml
-        kubectl set image deployment/oficina-api api=lamequesao/oficina-api:${{ github.sha }} -n oficina
-        kubectl apply -f k8s/deployment.yaml
-        kubectl apply -f k8s/service.yaml
 
     - name: Verify Deployment
       run: |
