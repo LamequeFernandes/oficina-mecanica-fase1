@@ -1,3 +1,7 @@
+from ddtrace import patch_all
+
+patch_all()
+
 from fastapi import FastAPI
 from fastapi.responses import JSONResponse
 
