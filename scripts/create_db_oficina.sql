@@ -45,6 +45,7 @@ CREATE TABLE `usuario` (
   `senha` varchar(255) NOT NULL,
   `nome` varchar(255) NOT NULL,
   `dta_cadastro` datetime DEFAULT NULL,
+  `ativo` boolean NOT NULL DEFAULT true,
   PRIMARY KEY (`usuario_id`),
   UNIQUE KEY `email` (`email`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
@@ -69,6 +70,7 @@ CREATE TABLE `funcionario` (
   `funcionario_id` int NOT NULL AUTO_INCREMENT,
   `usuario_id` int NOT NULL,
   `matricula` int NOT NULL,
+  `cpf` varchar(11) NOT NULL,
   `tipo_funcionario` enum('ADMINISTRADOR','MECANICO') NOT NULL,
   PRIMARY KEY (`funcionario_id`),
   UNIQUE KEY `usuario_id` (`usuario_id`),

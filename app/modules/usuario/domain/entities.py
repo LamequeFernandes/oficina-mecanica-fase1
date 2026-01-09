@@ -35,6 +35,7 @@ class Funcionario:
     usuario: Usuario
     matricula: int
     tipo: str  # 'ADMINISTRADOR' ou 'MECANICO'
+    cpf: str
 
     def __post_init__(self):
         if not self.tipo == 'ADMINISTRADOR' and not self.tipo == 'MECANICO':
