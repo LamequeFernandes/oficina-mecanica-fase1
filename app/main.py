@@ -2,6 +2,10 @@ from ddtrace import patch_all
 
 patch_all()
 
+import logging
+import sys
+import json
+
 from fastapi import FastAPI
 from fastapi.responses import JSONResponse
 
@@ -23,8 +27,35 @@ from app.modules.ordem_servico.presentation.routes import (
 from app.modules.servico.presentation.routes import router as router_servico
 from app.modules.peca.presentation.routes import router as router_peca
 
+class JsonFormatter(logging.Formatter):
+    def format(self, record):
+        log = {
+            "level": record.levelname,
+            "message": record.getMessage(),
+            "service": "oficina-api",
+            "logger": record.name,
+        }
 
-app = FastAPI(title='Oficina Mecânica - Fase 1', version='1.0.0')
+        # Datadog correlation
+        try:
+            from ddtrace import tracer
+            span = tracer.current_span()
+            if span:
+                log["dd.trace_id"] = span.trace_id
+                log["dd.span_id"] = span.span_id
+        except Exception:
+            pass
+
+        return json.dumps(log)
+
+handler = logging.StreamHandler(sys.stdout)
+handler.setFormatter(JsonFormatter())
+
+logging.getLogger().handlers = [handler]
+logging.getLogger().setLevel(logging.INFO)
+
+
+app = FastAPI(title='Oficina Mecânica - Fase 3', version='1.0.0')
 
 
 app.include_router(router_usuario, prefix='/usuarios', tags=['Usuários'])
@@ -55,3 +86,7 @@ async def handle_exceptions(request, exc):
         status_code=http_exception.status_code,
         content={'detail': http_exception.detail},
     )
+
+
+
+
