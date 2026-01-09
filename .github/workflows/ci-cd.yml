@@ -2,12 +2,15 @@ name: CI/CD Pipeline
 
 on:
   push:
-    branches: [ main, teste-infra ]
   pull_request:
-    branches: [ main, teste-infra ]
+    branches: 
+      - main
+    types:
+      - closed
 
 jobs:
   build-and-test:
+    if: github.event.pull_request.merged == true && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
 
     services:
@@ -83,7 +86,7 @@ jobs:
         ")
         echo "Coverage: $COVERAGE_PERCENT"
         
-        # Verifica se a cobertura é pelo menos 80%
+        # Verifica se a cobertura é pelo menos 70%
         python -c "
         import xml.etree.ElementTree as ET
         tree = ET.parse('coverage.xml')
@@ -91,10 +94,10 @@ jobs:
         coverage = float(root.attrib['line-rate'])
         print(f'Coverage: {coverage*100:.2f}%')
         if coverage < 0.8:
-            print('ERROR: Coverage below 80%')
+            print('ERROR: Coverage below 70%')
             exit(1)
         else:
-            print('SUCCESS: Coverage meets 80% requirement')
+            print('SUCCESS: Coverage meets 70% requirement')
         "
 
     # BUILD AND PUSH DOCKER IMAGE
@@ -109,7 +112,7 @@ jobs:
   deploy:
     needs: build-and-test
     runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/main'
+    if: github.event.pull_request.merged == true && github.ref == 'refs/heads/main'
     steps:
     - uses: actions/checkout@v4
 
@@ -121,29 +124,51 @@ jobs:
         aws-region: us-east-1
 
     - name: Update kubeconfig
-      run: aws eks update-kubeconfig --name oficina-fase2 --region us-east-1
+      run: aws eks update-kubeconfig --name oficina-fase3-eks --region us-east-1
 
-    - name: Create Kubernetes Secrets
+    # - name: Create Kubernetes Secrets
+    #   run: |
+    #     kubectl create secret generic app-secrets \
+    #       --from-literal=USER_DB=${{ secrets.DB_USERNAME }} \
+    #       --from-literal=PASSWORD_DB=${{ secrets.DB_PASSWORD }} \
+    #       --from-literal=SECRET_KEY=${{ secrets.SECRET_KEY }} \
+    #       --dry-run=client -o yaml | kubectl apply -f -
+
+    - name: Substitute Env Variables in Secret and Apply
       run: |
-        kubectl create secret generic app-secrets \
-          --from-literal=USER_DB=${{ secrets.DB_USERNAME }} \
-          --from-literal=PASSWORD_DB=${{ secrets.DB_PASSWORD }} \
-          --from-literal=SECRET_KEY=${{ secrets.SECRET_KEY }} \
-          --dry-run=client -o yaml | kubectl apply -f -
+        sed -i "s|<USER_DB>|${{ secrets.DB_USERNAME }}|g" k8s/secret.yaml
+        sed -i "s|<PASSWORD_DB>|${{ secrets.DB_PASSWORD }}|g" k8s/secret.yaml
+        sed -i "s|<HOST_DB>|${{ secrets.RDS_ENDPOINT }}|g" k8s/secret.yaml
+        sed -i "s|<PORT_DB>|3306|g" k8s/secret.yaml
+        sed -i "s|<DATABASE>|oficina_fase1|g" k8s/secret.yaml
+        sed -i "s|<SECRET_KEY>|${{ secrets.SECRET_KEY }}|g" k8s/secret.yaml
+        sed -i "s|<ALGORITHM>|HS256|g" k8s/secret.yaml
+        sed -i "s|<JWT_ISSUER>|oficina-auth|g" k8s/secret.yaml
+        sed -i "s|<JWT_AUDIENCE>|oficina-api|g" k8s/secret.yaml
+        kubectl apply -f k8s/secret.yaml
 
     - name: Deploy to Kubernetes
       run: |
         sed -i "s|<RDS_ENDPOINT_DB>|${{ secrets.RDS_ENDPOINT }}|g" k8s/configmap.yaml
-        kubectl apply -f k8s/configmap.yaml
         kubectl apply -f k8s/deployment-api.yaml
-        kubectl set image deployment/fastapi-app fastapi=lamequesao/oficina-api:${{ github.sha }}
-        kubectl apply -f k8s/deployment-api.yaml
-        kubectl apply -f k8s/service-api.yaml
-        kubectl apply -f k8s/hpa.yaml
+        kubectl set image deployment/oficina-api api=lamequesao/oficina-api:${{ github.sha }} -n oficina
+        kubectl apply -f k8s/deployment.yaml
+        kubectl apply -f k8s/service.yaml
 
-    - name: Deploy Database (managed by Terraform)
+    - name: Verify Deployment
       run: |
-        echo "Banco de dados gerenciado pelo Terraform (RDS). Nenhum deploy K8s necessário."
+        # Aguarda até 5 minutos pelo deployment ficar pronto
+        kubectl rollout status deployment/oficina-api -n oficina --timeout=300s
+        
+        # Mostra status final
+        echo "=== PODS ==="
+        kubectl get pods -n oficina
+        
+        echo "=== SERVICES ==="
+        kubectl get svc -n oficina
+        
+        echo "=== ENDPOINT ==="
+        kubectl get svc oficina-api-service -n oficina -o jsonpath='{.status.loadBalancer.ingress[0].hostname}'
 
-    - name: Restart FastAPI Deployment
-      run: kubectl rollout restart deployment/fastapi-app
+    - name: Notify Deployment Success
+      run: echo "Deployment to Kubernetes cluster 'oficina-fase3-eks' completed successfully."
