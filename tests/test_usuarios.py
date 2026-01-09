@@ -25,7 +25,8 @@ def test_cadastrar_administrador(cleanup_admin):
         "senha": "robin123",
         "nome": "Robin Administrador Teste",
         "matricula": "1234567",
-        "tipo": "ADMINISTRADOR"
+        "tipo": "ADMINISTRADOR",
+        "cpf": "91704687020"
     }
     response = client.post(
         "/usuarios/funcionarios/cadastrar", 
@@ -40,7 +41,8 @@ def test_cadastrar_mecanico(cleanup_mecanico):
         "senha": "joao123",
         "nome": "Joao Mecanico Teste",
         "matricula": "7654321",
-        "tipo": "MECANICO"
+        "tipo": "MECANICO",
+        "cpf": "91704687020"
     }
     response = client.post(
         "/usuarios/funcionarios/cadastrar", 
@@ -148,7 +150,8 @@ def test_atualizar_funcionario(obter_admin):
         "senha": "robin123",
         "nome": "Robin Usuario Teste Atualizado",
         "matricula": "1234567",
-        "tipo": "ADMINISTRADOR"
+        "tipo": "ADMINISTRADOR",
+        "cpf": "91704687020"
     }
     response = client.put(
         f"/usuarios/funcionarios/{admin_logado.funcionario_id}",
