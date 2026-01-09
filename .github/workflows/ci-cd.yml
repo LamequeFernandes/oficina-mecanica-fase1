@@ -86,7 +86,7 @@ jobs:
         ")
         echo "Coverage: $COVERAGE_PERCENT"
         
-        # Verifica se a cobertura é pelo menos 70%
+        # Verifica se a cobertura é pelo menos 80%
         python -c "
         import xml.etree.ElementTree as ET
         tree = ET.parse('coverage.xml')
@@ -94,10 +94,10 @@ jobs:
         coverage = float(root.attrib['line-rate'])
         print(f'Coverage: {coverage*100:.2f}%')
         if coverage < 0.8:
-            print('ERROR: Coverage below 70%')
+            print('ERROR: Coverage below 80%')
             exit(1)
         else:
-            print('SUCCESS: Coverage meets 70% requirement')
+            print('SUCCESS: Coverage meets 80% requirement')
         "
 
     # BUILD AND PUSH DOCKER IMAGE
