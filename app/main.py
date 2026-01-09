@@ -39,6 +39,11 @@ app.include_router(router_servico, prefix='/servicos', tags=['Serviços'])
 app.include_router(router_peca, prefix='/pecas', tags=['Peças'])
 
 
+@app.get("/health")
+def health():
+    return {"status": "ok"}
+
+
 @app.exception_handler(Exception)
 async def handle_exceptions(request, exc):
     http_exception = tratar_erro_dominio(exc)
