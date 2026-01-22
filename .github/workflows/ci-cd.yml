@@ -126,6 +126,10 @@ jobs:
     - name: Update kubeconfig
       run: aws eks update-kubeconfig --name oficina-fase3-eks --region us-east-1
 
+    - name: Create Namespace
+      run: |
+        kubectl apply -f k8s/namespace.yaml
+
     - name: Substitute Env Variables in Secret and Apply
       run: |
         sed -i "s|<USER_DB>|${{ secrets.DB_USERNAME }}|g" k8s/secret.yaml
@@ -138,6 +142,8 @@ jobs:
         sed -i "s|<JWT_ISSUER>|oficina-auth|g" k8s/secret.yaml
         sed -i "s|<JWT_AUDIENCE>|oficina-api|g" k8s/secret.yaml
         kubectl apply -f k8s/secret.yaml
+        kubectl apply -f k8s/deployment.yaml -n oficina
+        kubectl apply -f k8s/service.yaml -n oficina
 
     - name: Verify Deployment
       run: |
